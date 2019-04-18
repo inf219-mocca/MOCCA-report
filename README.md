@@ -11,7 +11,7 @@ Some notes on requirements:
 
 ## Configure `latexmk`
 
-Create a new file in `$HOME$` called `.latexmkrc`:
+Create a new file in `$HOME` called `.latexmkrc`:
 
 ``` text
 # Use LuaLaTeX
@@ -40,4 +40,15 @@ everything will start compiling for you and will open the created PDF file.
 
 ## Editing
 
-You do you, there are a thousand different editors for LaTeX.
+You do you, there are a thousand different editors for LaTeX. There are however
+some tips I can come with:
+
+1. The style I personally prefer for references in `BibTeX` are
+   `<authorLastName><year><FirstWordFromTitle>`. Personal preference obviously.
+   The reference style used in this report is the IEEE style, which is the most
+   prevalent one within computer science.
+2. Labels are really useful, use them within sections, for figures, images and
+   so on.
+3. Don't commit the generated PDF until you are finished with it, Git doesn't
+   work very well with blobs so it ends up tracking each commited version of the
+   file, causing the size of the repository to become stupid large.

@@ -1,0 +1,140 @@
+\documentclass[12pt,a4paper,oneside,article]{memoir}
+
+\usepackage{polyglossia}
+\setdefaultlanguage{english}
+\usepackage{fontspec}
+
+\defaultfontfeatures{Ligatures=TeX}
+\newfontfeature{Microtype}{protrusion=default;expansion=default}
+\usepackage[final]{microtype}
+\setmainfont{Linux Libertine O}
+\setsansfont{Linux Biolinum O}
+\setmonofont{DejaVu Sans Mono}
+
+\usepackage{subfiles}
+\usepackage{tabularx}
+\usepackage{tabu}
+\usepackage{booktabs}
+\usepackage{multirow}
+\usepackage{float}
+\usepackage{amsmath,amsfonts,amssymb}
+\usepackage{mathtools}
+\usepackage[shortlabels]{enumitem}
+
+\usepackage{tikz}
+\usepackage{graphicx}
+\usepackage{hyperref}
+\hypersetup{hidelinks}
+\usepackage{xcolor, colortbl, array}
+
+\usepackage{listings}
+\usepackage{color}
+\lstset{
+  language=Python,
+  frame=tb,
+  breaklines=true,
+  breakatwhitespace=true,
+  keepspaces=true,
+  columns=fullflexible,
+  showspaces=false,
+  showstringspaces=false,
+  showtabs=false,
+  basicstyle=\ttfamily\footnotesize
+}
+
+\usepackage[autostyle,strict,autopunct]{csquotes}
+\usepackage[style=ieee,backend=biber]{biblatex}
+\bibliography{bibliography}
+
+\usepackage{chngcntr}
+\counterwithin{table}{section}
+\numberwithin{equation}{chapter}
+\counterwithin{figure}{section}
+\setenumerate[0]{label= (\alph*)}
+\AtBeginDocument{\counterwithin{lstlisting}{section}}
+\counterwithout{section}{chapter}
+
+\chapterstyle{hangnum}
+\pagestyle{ruled}
+
+\title{MOCCA}
+\author{Eivind D. Halderaker, Sondre Å. Nilsen}
+\date{Spring 2019}
+\begin{document}
+
+\maketitle
+\tableofcontents
+
+\begin{abstract}
+  Hello world!
+\end{abstract}
+
+\section{Introduction}
+\label{sec:introduction}
+Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed congue odio id
+dapibus scelerisque. Nunc eget neque viverra, sagittis turpis nec, gravida erat.
+Phasellus luctus dignissim quam, vitae pulvinar magna auctor eget. Integer
+congue maximus odio, vel elementum lorem maximus vitae. Sed venenatis risus nec
+tempor placerat. Nulla id tristique nulla. Sed magna sem, fringilla vitae
+consequat quis, feugiat quis diam. Morbi finibus a neque non aliquam.
+
+Praesent leo ipsum, facilisis in velit a, pharetra dictum arcu. Curabitur at
+ipsum sed eros aliquet bibendum at eu lacus. Phasellus at semper quam. Nunc
+sagittis commodo metus ac volutpat. Morbi dictum ante a scelerisque congue.
+Maecenas vitae aliquam felis, in auctor elit. Proin tincidunt luctus lectus, vel
+mollis libero posuere tincidunt. Fusce pharetra suscipit neque, sit amet mattis
+neque interdum eu. Donec erat mi, rutrum quis nibh ac, luctus tincidunt odio.
+Curabitur sapien nunc, rutrum non laoreet in, gravida eu odio. Nulla massa nisi,
+mollis ut tempor in, ultricies a orci \cite{ayoola2015Camera}.
+
+\section{More introductions}
+\label{sec:more-introduction}
+Maecenas sit amet consectetur tellus. Pellentesque hendrerit ipsum eu ante
+gravida tempor. Quisque sit amet erat viverra, auctor magna at, ultrices diam.
+Aenean pulvinar mauris sit amet lorem mollis tincidunt. Phasellus id ultricies
+lorem, a dapibus odio. Interdum et malesuada fames ac ante ipsum primis in
+faucibus. Vestibulum pharetra erat tortor, vel pretium neque laoreet eu.
+Suspendisse vestibulum enim id aliquam viverra
+\cite{munroe2012Approximation}.
+
+\subsection{Why Python}
+\label{sec:why-python}
+
+\subsection{Why Django}
+\label{sec:creation-django}
+
+\section{Technical details}
+\label{sec:technical-details}
+
+\subsection{Implementation}
+\label{sec:implementation}
+
+\section{Conclusion}
+\label{sec:conclusion}
+Integer quis finibus nisl. In at viverra nisi, laoreet tincidunt mi. Aliquam nec
+nisl laoreet, consectetur lacus a, sodales dui. Aliquam sollicitudin mi odio,
+quis pharetra risus tincidunt non. Nulla fringilla neque quis nisi egestas
+auctor. Integer mattis vitae nibh sed mollis. Donec viverra felis eros, vitae
+malesuada tellus cursus id. Aenean tempus lorem non dui aliquam, sed dignissim
+nunc posuere. Donec eu eleifend nulla.
+
+Phasellus posuere massa enim, non tincidunt nisl efficitur sit amet. Suspendisse
+orci ipsum, sagittis id dignissim laoreet, tincidunt et mauris. Praesent a lacus
+vitae ligula facilisis finibus id non risus. Mauris maximus turpis magna, id
+tincidunt ante tempus sed. Nullam ante purus, mollis sodales velit non, viverra
+porta orci. Nulla dapibus malesuada ligula, quis ullamcorper magna ultrices
+vitae. Donec feugiat ex in velit venenatis porta. Fusce sollicitudin metus sit
+amet diam varius, sed sodales lorem sagittis. Donec quis suscipit mauris.
+Pellentesque sed ligula imperdiet, imperdiet sapien a, facilisis arcu. Nulla
+blandit nibh quis nisl ultricies, sagittis placerat lacus pulvinar
+\cite{munroe2014Automation}.
+
+\clearpage{}
+\renewcommand*{\UrlFont}{\footnotesize\ttfamily}
+\printbibliography
+
+\end{document}
+%%% Local Variables:
+%%% mode: latex
+%%% TeX-master: t
+%%% End:

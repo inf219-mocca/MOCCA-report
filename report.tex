@@ -57,7 +57,7 @@
 \chapterstyle{hangnum}
 \pagestyle{ruled}
 
-\title{MOCCA}
+\title{MOCCA: MOCCA Operational Controller for Coffee Availability}
 \author{Eivind D. Halderaker, Sondre Å. Nilsen}
 \date{Spring 2019}
 \begin{document}
@@ -66,72 +66,140 @@
 \tableofcontents
 
 \begin{abstract}
-  Hello world!
+  As students with access to free coffee in our study hall our biggest problem
+  is never knowing whether there will be fresh coffee available from it in times
+  of need. \textit{MOCCA} is an attempt to address and fix this problem once and
+  for all: a single source of truth about the availability of fresh coffee.
 \end{abstract}
 
-\section{Introduction}
-\label{sec:introduction}
-Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed congue odio id
-dapibus scelerisque. Nunc eget neque viverra, sagittis turpis nec, gravida erat.
-Phasellus luctus dignissim quam, vitae pulvinar magna auctor eget. Integer
-congue maximus odio, vel elementum lorem maximus vitae. Sed venenatis risus nec
-tempor placerat. Nulla id tristique nulla. Sed magna sem, fringilla vitae
-consequat quis, feugiat quis diam. Morbi finibus a neque non aliquam.
+\section{Todos}
+\begin{itemize}
+\item List of acronyms/synonyms/glossary
+\item Links/references to technologies/frameworks
+\item Sensors requires proper names and so on
+\item Give thanks to everyone who has helped
+\end{itemize}
 
-Praesent leo ipsum, facilisis in velit a, pharetra dictum arcu. Curabitur at
-ipsum sed eros aliquet bibendum at eu lacus. Phasellus at semper quam. Nunc
-sagittis commodo metus ac volutpat. Morbi dictum ante a scelerisque congue.
-Maecenas vitae aliquam felis, in auctor elit. Proin tincidunt luctus lectus, vel
-mollis libero posuere tincidunt. Fusce pharetra suscipit neque, sit amet mattis
-neque interdum eu. Donec erat mi, rutrum quis nibh ac, luctus tincidunt odio.
-Curabitur sapien nunc, rutrum non laoreet in, gravida eu odio. Nulla massa nisi,
-mollis ut tempor in, ultricies a orci \cite{ayoola2015Camera}.
+\section{Introduction}\label{sec:introduction}
+Introductions really are the hardest part about writing anything, so with that
+out of the way, lets talk about \textit{MOCCA}. It's an attempt to both write
+and wire together a solution that combines hardware and software to solve a long
+standing problem we've had in our study hall. The coffee machine is probably the
+most prized and valuable piece of comfort that we have, and is used from eight
+in the morning until the last student goes home.
 
-\section{More introductions}
-\label{sec:more-introduction}
-Maecenas sit amet consectetur tellus. Pellentesque hendrerit ipsum eu ante
-gravida tempor. Quisque sit amet erat viverra, auctor magna at, ultrices diam.
-Aenean pulvinar mauris sit amet lorem mollis tincidunt. Phasellus id ultricies
-lorem, a dapibus odio. Interdum et malesuada fames ac ante ipsum primis in
-faucibus. Vestibulum pharetra erat tortor, vel pretium neque laoreet eu.
-Suspendisse vestibulum enim id aliquam viverra
-\cite{munroe2012Approximation}.
+The great problem is that you're never sure whether or not there is actually
+coffee available, and whenever there is none you waste precious minutes in the
+couch waiting for it to finish brewing. There have been many attempts at solving
+this problem throughout the years, none of which have survived past the initial
+testing phase. This project aims to break the chain and have a working product
+that can withstand the test of time.
 
-\subsection{Why Python}
-\label{sec:why-python}
+\section{Technical details}\label{sec:technical-details}
+\textit{MOCCA} is written in a wide range of languages and technologies, the
+back-end is written in Python using the Django framework while the front-end is
+written in React, while communication between these two happens across a REST
+API. The most important piece of software and hardware however is the Arduino
+that is --- essentially --- our interface between the real world and our
+software. It reads the temperature of the coffee, how much power the machine is
+drawing and instructs our camera when to take a photo.
 
-\subsection{Why Django}
-\label{sec:creation-django}
+\subsection{Why Python and Django}\label{sec:why-python-django}
+For the back-end Python was chosen specifically for its breadth of available
+libraries and solutions, and ease of use. We briefly talked about other
+languages but Python was a very clear winner. The choice of Django however was a
+bit more contentious, in the very beginning the battle plan was to use Flask
+which would've meant that we'd have to do a lot of the heavy lifting ourselves.
+After a fairly quick trial period where we developed a few prototypes the choice
+fell on Django, mostly due to the batteries-included approach of it but perhaps
+mostly due to Sondre's familiarity with it given he had previous experience with
+it.
 
-\section{Technical details}
-\label{sec:technical-details}
+Thanks to Django we were able to build on top of existing battle-tested
+libraries, we used Django REST Framework for the heavy lifting of implementing
+the API, we used drf-yasg (Django REST Framework - Yet Another Swagger
+Generator) for creating Swagger documentation of the API. For communicating with
+our Arduino we used Pyserial and for asynchronously polling it we used Celery.
 
-\subsection{Implementation}
-\label{sec:implementation}
+\subsection{Licenses}\label{sec:licenses}
+Both the code in the back-end and front-end are licensed under the MIT License,
+a very popular open-source license. The primary reason for choosing this was due
+to the very permissive nature of the license, in essence all it requires is
+preservation of copyright and license notices. For derivative works you may
+freely license them under whatever terms you want and with or without the
+aforementioned source code.
 
-\section{Conclusion}
-\label{sec:conclusion}
-Integer quis finibus nisl. In at viverra nisi, laoreet tincidunt mi. Aliquam nec
-nisl laoreet, consectetur lacus a, sodales dui. Aliquam sollicitudin mi odio,
-quis pharetra risus tincidunt non. Nulla fringilla neque quis nisi egestas
-auctor. Integer mattis vitae nibh sed mollis. Donec viverra felis eros, vitae
-malesuada tellus cursus id. Aenean tempus lorem non dui aliquam, sed dignissim
-nunc posuere. Donec eu eleifend nulla.
+The code for the Arduino however required the usage of a library that was
+licensed under the APGLv3 license. The family of GPL licenses are what many call
+viral licenses, if you use a library in your program that is licensed under
+these your program is in essence infected and you now have to license yours
+under the same license as well.
 
-Phasellus posuere massa enim, non tincidunt nisl efficitur sit amet. Suspendisse
-orci ipsum, sagittis id dignissim laoreet, tincidunt et mauris. Praesent a lacus
-vitae ligula facilisis finibus id non risus. Mauris maximus turpis magna, id
-tincidunt ante tempus sed. Nullam ante purus, mollis sodales velit non, viverra
-porta orci. Nulla dapibus malesuada ligula, quis ullamcorper magna ultrices
-vitae. Donec feugiat ex in velit venenatis porta. Fusce sollicitudin metus sit
-amet diam varius, sed sodales lorem sagittis. Donec quis suscipit mauris.
-Pellentesque sed ligula imperdiet, imperdiet sapien a, facilisis arcu. Nulla
-blandit nibh quis nisl ultricies, sagittis placerat lacus pulvinar
-\cite{munroe2014Automation}.
+\subsection{Implementation}\label{sec:implementation}
+\subsubsection{Arduino}\label{sec:arduino}
+The code for the Arduino is very simply in all honesty, but it does the job
+required. Any code on an Arduino runs in a tight loop that continuously reads
+from its sensors and saves the data to a queue. Since we read from the Arduino
+every ten seconds, we only want the latest data but we don't want to block
+getting the data on the Arduino itself reading its sensors. The way we worked
+around this issue was to have the Arduino continuously read to the queue,
+discarding the last item in it for every reading, while waiting for us to send a
+predetermined message saying that we are ready for data. In our case this
+message is simply ``1''.
+
+Once the Arduino receives this it enters a write-mode --- in a sense --- and
+fetches the latest reading from the queue, returns it, clears the queue and
+exits the current state returning to reading data. The sensors themselves all
+came with ready-made libraries that you simply need to download, import them and
+then call the documented functions and you are good to go.
+
+\subsubsection{Back-end}\label{sec:back-end}
+The back-end is definitely the most complex part of the project, in part because
+the real world is messy, but also because you have to orchestra a service that
+communicates with the Arduino while also serving an API, which required us to do
+the data fetching in the background in a asynchronous task runner.
+
+As mentioned, the real world is messy --- there are a ton of moving parts,
+variables and ``states'' it can be in. When reading from the sensors, how do you
+know if the current ``state'' of the world is in order? For instance, the coffee
+machine can be powered off by two different parts: its own power supply, but
+also the power plug itself as it runs on a timer. When getting the power status
+from the Arduino, how do you ensure that the machine has been in a consistent
+phase and the reading you are getting is not a one-time event? The amount of
+possible things you have to account for is near endless, and we have most
+definitely not been able to foresee or cover for all of them.
+
+\subsubsection{Front-end}\label{sec:front-end}
+The hardest part of the front-end was definitely the CSS, and this only partly
+in jest. Though the least complex of the two -ends, it still had its own fair
+share of minor issues. We decided early on with using React due to its
+popularity for web applications nowadays as a learning experience. React is in
+many ways the exact opposite of Django, no batteries included but the ecosystem
+for it is vast. We were again able to lean on existing battle-tested solutions,
+using React Router for creating pages, Axios for querying the API and moment for
+parsing dates.
+
+The front-end does a GET request to the API endpoint that our back-end serves
+every ten seconds and tries to display the current status of the coffee. You
+have two possible views, a simple ``the coffee is hot, go get it!'' page and a
+history page listing the last 25 readings.
+
+\section{Conclusion}\label{sec:conclusion}
+Though absolutely a success in the authors opinions, there are still quite a few
+things left that we'd like to implement and others that are
+would-be-cool-to-have. We have talked about doing statistics about which
+students drink the most coffee, who is the best at starting a new pot of coffee
+if the old one is empty and so on.
+
+The biggest, and probably most pressing item to do is some sort of shell for the
+hardware. We had grand plans of creating a nice 3D-printed case for both the
+Raspberry Pi and Arduino, but time was not on our side before the scheduled
+deadline. This is something that we'd like to be able to do during the summer so
+that it is ready for the new students arriving this fall.
 
 \clearpage{}
 \renewcommand*{\UrlFont}{\footnotesize\ttfamily}
-\printbibliography
+\printbibliography{}
 
 \end{document}
 %%% Local Variables:

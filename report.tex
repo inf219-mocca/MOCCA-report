@@ -81,21 +81,43 @@
 \end{itemize}
 
 \section{Introduction}\label{sec:introduction}
-Introductions really are the hardest part about writing anything, so with that
-out of the way, lets talk about \textit{MOCCA}. It's an attempt to both write
-and wire together a solution that combines hardware and software to solve a long
+(...) It's an attempt to both write and wire together a solution that combines 
+hardware and software to solve a long
 standing problem we've had in our study hall. The coffee machine is probably the
 most prized and valuable piece of comfort that we have, and is used from eight
 in the morning until the last student goes home.
 
-The great problem is that you're never sure whether or not there is actually
+The problem is that you're never sure whether or not there is actually
 coffee available, and whenever there is none you waste precious minutes in the
 couch waiting for it to finish brewing. There have been many attempts at solving
 this problem throughout the years, none of which have survived past the initial
-testing phase. This project aims to break the chain and have a working product
+testing phase. This project breaks the chain and have a working product
 that can withstand the test of time.
 
-\section{Technical details}\label{sec:technical-details}
+In this report, we describe a system combining different sensors together with 
+an Arduino and a Raspberry Pi to monitor a Moccamaster and service 
+an API. We call this system \textit{MOCCA}. It's task is to measure both the 
+quality and quantity of coffee. 
+
+For quality we use both a temperature sensor 
+and power current sensor (?). The temperature is essential to high quality 
+coffee, since you do not want it chilled down and definitely not warmed 
+up again. Another factor of quality is the age of the brew. The good taste of 
+coffee deteriorates as time goes on if it has been held warm for some time. To 
+measure the age of a brew we monitor the amount of power the Moccamaster is 
+draining. A Moccamaster has essentially three states: turned off, brewing, 
+and warming. By saving a time stamp at the start of a new brew, it is trivial 
+to calculate age.
+
+Quantity on the other hand is done by image processing. Images are taken of the 
+coffee pot and in turn analysed with regards to the amount of dark pixels. 
+Taking the background of the pot into account, we produce an rough estimate of 
+the amount of coffee. 
+
+
+\section{System overview}\label{sec:technical-details}
+
+\subsection{DIAGRAM - PLS DO}
 \textit{MOCCA} is written in a wide range of languages and technologies, the
 back-end is written in Python using the Django framework while the front-end is
 written in React, while communication between these two happens across a REST
@@ -104,11 +126,10 @@ that is --- essentially --- our interface between the real world and our
 software. It reads the temperature of the coffee, how much power the machine is
 drawing and instructs our camera when to take a photo.
 
-\subsection{Why Python and Django}\label{sec:why-python-django}
-For the back-end Python was chosen specifically for its breadth of available
-libraries and solutions, and ease of use. We briefly talked about other
-languages but Python was a very clear winner. The choice of Django however was a
-bit more contentious, in the very beginning the battle plan was to use Flask
+Python was chosen for back-end. It is a programming language with plenty of 
+libraries available. 
+The choice of Django however was a bit more contentious, in the very beginning 
+the battle plan was to use Flask
 which would've meant that we'd have to do a lot of the heavy lifting ourselves.
 After a fairly quick trial period where we developed a few prototypes the choice
 fell on Django, mostly due to the batteries-included approach of it but perhaps
@@ -121,23 +142,9 @@ the API, we used drf-yasg (Django REST Framework - Yet Another Swagger
 Generator) for creating Swagger documentation of the API. For communicating with
 our Arduino we used Pyserial and for asynchronously polling it we used Celery.
 
-\subsection{Licenses}\label{sec:licenses}
-Both the code in the back-end and front-end are licensed under the MIT License,
-a very popular open-source license. The primary reason for choosing this was due
-to the very permissive nature of the license, in essence all it requires is
-preservation of copyright and license notices. For derivative works you may
-freely license them under whatever terms you want and with or without the
-aforementioned source code.
-
-The code for the Arduino however required the usage of a library that was
-licensed under the APGLv3 license. The family of GPL licenses are what many call
-viral licenses, if you use a library in your program that is licensed under
-these your program is in essence infected and you now have to license yours
-under the same license as well.
-
-\subsection{Implementation}\label{sec:implementation}
+\subsection{Data collection}\label{sec:data-collection}
 \subsubsection{Arduino}\label{sec:arduino}
-The code for the Arduino is very simply in all honesty, but it does the job
+The code for the Arduino is very simple in all honesty, but it does the job
 required. Any code on an Arduino runs in a tight loop that continuously reads
 from its sensors and saves the data to a queue. Since we read from the Arduino
 every ten seconds, we only want the latest data but we don't want to block
@@ -153,7 +160,15 @@ exits the current state returning to reading data. The sensors themselves all
 came with ready-made libraries that you simply need to download, import them and
 then call the documented functions and you are good to go.
 
-\subsubsection{Back-end}\label{sec:back-end}
+
+\subsection{Raspberry Pi}\label{sec:raspberry-pi}
+Raspberry Pi is a small computer with the basics you need: USB, HDMI, WiFi and 
+most important for us; support for a camera. Though lacking in computational 
+power it's size and affordability makes it a perfect data cruncher.
+% To be continued...
+
+\section{Software}\label{sec:software}
+\subsection{Back-end}\label{sec:back-end}
 The back-end is definitely the most complex part of the project, in part because
 the real world is messy, but also because you have to orchestra a service that
 communicates with the Arduino while also serving an API, which required us to do
@@ -169,9 +184,9 @@ phase and the reading you are getting is not a one-time event? The amount of
 possible things you have to account for is near endless, and we have most
 definitely not been able to foresee or cover for all of them.
 
-\subsubsection{Front-end}\label{sec:front-end}
-The hardest part of the front-end was definitely the CSS, and this only partly
-in jest. Though the least complex of the two -ends, it still had its own fair
+\subsection{Front-end}\label{sec:front-end}
+The hardest part of the front-end was definitely the CSS.  Though the least 
+complex of the two -ends, it still had its own fair
 share of minor issues. We decided early on with using React due to its
 popularity for web applications nowadays as a learning experience. React is in
 many ways the exact opposite of Django, no batteries included but the ecosystem
@@ -185,6 +200,15 @@ have two possible views, a simple ``the coffee is hot, go get it!'' page and a
 history page listing the last 25 readings.
 
 \section{Conclusion}\label{sec:conclusion}
+We have created a system to somewhat successfully monitor the coffee in a 
+Moccamaster. % Should we call the sensor a current or power sensor?
+Current and temperature sensors connected to an Arduino gather information about 
+the quality of the coffee. The temperature and current is then sent to a 
+Raspberry Pi via USB serial. Using a camera connected to the Raspberry Pi we 
+capture an image of the coffee pot to process. Processing these data in 
+turn gives us an insight in the quality and quality of the coffee.
+
+\section{Future work}\label{sec:future-work}
 Though absolutely a success in the authors opinions, there are still quite a few
 things left that we'd like to implement and others that are
 would-be-cool-to-have. We have talked about doing statistics about which
@@ -196,6 +220,22 @@ hardware. We had grand plans of creating a nice 3D-printed case for both the
 Raspberry Pi and Arduino, but time was not on our side before the scheduled
 deadline. This is something that we'd like to be able to do during the summer so
 that it is ready for the new students arriving this fall.
+
+\newpage % Dunno how to remove 6. Future work
+\section*{Appendix A}\label{sec:appendix}
+\subsection{Licenses}\label{sec:licenses}
+Both the code in the back-end and front-end are licensed under the MIT License,
+a very popular open-source license. The primary reason for choosing this was due
+to the very permissive nature of the license, in essence all it requires is
+preservation of copyright and license notices. For derivative works you may
+freely license them under whatever terms you want and with or without the
+aforementioned source code.
+
+The code for the Arduino however required the usage of a library that was
+licensed under the APGLv3 license. The family of GPL licenses are what many call
+viral licenses, if you use a library in your program that is licensed under
+these your program is in essence infected and you now have to license yours
+under the same license as well.
 
 \clearpage{}
 \renewcommand*{\UrlFont}{\footnotesize\ttfamily}

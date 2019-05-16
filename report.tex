@@ -121,16 +121,18 @@ the amount of coffee.
 \textit{MOCCA} is written in a wide range of languages and technologies, the
 back-end is written in Python using the Django framework while the front-end is
 written in React, while communication between these two happens across a REST
-API. The most important piece of software and hardware however is the Arduino
-that is --- essentially --- our interface between the real world and our
-software. It reads the temperature of the coffee, how much power the machine is
-drawing and instructs our camera when to take a photo.
+API.
+The most important piece of software and hardware however is the Arduino
+that is --- essentially --- our interface, together with the camera on the 
+Raspberry Pi, between the real world and our software. It reads the temperature 
+of the coffee and how much power the machine is drawing. Without these sensors 
+and the camera to interface the Moccamaster the whole system is meaningless. 
 
 Python was chosen for back-end. It is a programming language with plenty of 
-libraries available. 
+libraries available and fairly consise. 
 The choice of Django however was a bit more contentious, in the very beginning 
-the battle plan was to use Flask
-which would've meant that we'd have to do a lot of the heavy lifting ourselves.
+the battle plan was to use Flask which would've meant that we'd have to do a 
+lot of the heavy lifting ourselves.
 After a fairly quick trial period where we developed a few prototypes the choice
 fell on Django, mostly due to the batteries-included approach of it but perhaps
 mostly due to Sondre's familiarity with it given he had previous experience with
@@ -164,7 +166,11 @@ then call the documented functions and you are good to go.
 \subsection{Raspberry Pi}\label{sec:raspberry-pi}
 Raspberry Pi is a small computer with the basics you need: USB, HDMI, WiFi and 
 most important for us; support for a camera. Though lacking in computational 
-power it's size and affordability makes it a perfect data cruncher.
+power it's size and affordability makes it a perfect data cruncher. We used 
+Raspberry Pi's very own camera module for ease of 
+use and a library is included. The module itself is plug-and-play and has more 
+than high enough resolution for our use. Since we analyse the pixels in an 
+image, the resolution 
 % To be continued...
 
 \section{Software}\label{sec:software}
@@ -208,6 +214,9 @@ Raspberry Pi via USB serial. Using a camera connected to the Raspberry Pi we
 capture an image of the coffee pot to process. Processing these data in 
 turn gives us an insight in the quality and quality of the coffee.
 
+A Django REST API then presents temperature, age and amount to the outside 
+world. 
+
 \section{Future work}\label{sec:future-work}
 Though absolutely a success in the authors opinions, there are still quite a few
 things left that we'd like to implement and others that are
@@ -222,7 +231,7 @@ deadline. This is something that we'd like to be able to do during the summer so
 that it is ready for the new students arriving this fall.
 
 \newpage % Dunno how to remove 6. Future work
-\section*{Appendix A}\label{sec:appendix}
+\section*{Appendix A}\label{sec:appendixA}
 \subsection{Licenses}\label{sec:licenses}
 Both the code in the back-end and front-end are licensed under the MIT License,
 a very popular open-source license. The primary reason for choosing this was due
@@ -236,6 +245,16 @@ licensed under the APGLv3 license. The family of GPL licenses are what many call
 viral licenses, if you use a library in your program that is licensed under
 these your program is in essence infected and you now have to license yours
 under the same license as well.
+
+\section*{Appendix B}\label{sec:appendixB}
+\subsection{Sensors}\label{sec:sensors}
+% Fix formating
+Raspberry Pi Camera module: 
+https://www.raspberrypi.org/products/camera-module-v2/
+
+Temperature sensor: https://www.adafruit.com/product/1748
+
+Current sensor: https://www.sparkfun.com/products/11005
 
 \clearpage{}
 \renewcommand*{\UrlFont}{\footnotesize\ttfamily}

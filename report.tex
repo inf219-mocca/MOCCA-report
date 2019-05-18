@@ -128,11 +128,10 @@ Raspberry Pi, between the real world and our software. It reads the temperature
 of the coffee and how much power the machine is drawing. Without these sensors 
 and the camera to interface the Moccamaster the whole system is meaningless. 
 
-Python was chosen for back-end. It is a programming language with plenty of 
-libraries available and fairly consise. 
-The choice of Django however was a bit more contentious, in the very beginning 
-the battle plan was to use Flask which would've meant that we'd have to do a 
-lot of the heavy lifting ourselves.
+Python was chosen for the back-end. It is a programming language with plenty of 
+libraries available and is fairly concise. The choice of Django however was a 
+bit more contentious, in the very beginning the battle plan was to use Flask 
+which would've meant that we'd have to do a lot of the heavy lifting ourselves.
 After a fairly quick trial period where we developed a few prototypes the choice
 fell on Django, mostly due to the batteries-included approach of it but perhaps
 mostly due to Sondre's familiarity with it given he had previous experience with
@@ -164,13 +163,15 @@ then call the documented functions and you are good to go.
 
 
 \subsection{Raspberry Pi}\label{sec:raspberry-pi}
-Raspberry Pi is a small computer with the basics you need: USB, HDMI, WiFi and 
-most important for us; support for a camera. Though lacking in computational 
-power it's size and affordability makes it a perfect data cruncher. We used 
-Raspberry Pi's very own camera module for ease of 
-use and a library is included. The module itself is plug-and-play and has more 
-than high enough resolution for our use. Since we analyse the pixels in an 
-image, the resolution 
+Raspberry Pi is a small computer with the basics you need: USB, HDMI, WiFi, 
+and, most important for us, support for a camera. Though lacking in 
+computational power it's size and affordability makes it a perfect data 
+cruncher for our case. The Pi can fit in a compact container near the 
+Moccamaster. We used Raspberry Pi's very own camera module for ease of use and 
+it's included library. The module itself is plug-and-play and has more than high 
+enough resolution for our use. We only need a rough estimate of how full the 
+coffee pot is and high resolution means more data needed to be processed. Most 
+of which is redundant. 
 % To be continued...
 
 \section{Software}\label{sec:software}
@@ -230,8 +231,8 @@ Raspberry Pi and Arduino, but time was not on our side before the scheduled
 deadline. This is something that we'd like to be able to do during the summer so
 that it is ready for the new students arriving this fall.
 
-\newpage % Dunno how to remove 6. Future work
-\section*{Appendix A}\label{sec:appendixA}
+\clearpage % Dunno how to remove 6. Future work
+\section{Appendix A}\label{sec:appendixA}
 \subsection{Licenses}\label{sec:licenses}
 Both the code in the back-end and front-end are licensed under the MIT License,
 a very popular open-source license. The primary reason for choosing this was due
@@ -246,8 +247,9 @@ viral licenses, if you use a library in your program that is licensed under
 these your program is in essence infected and you now have to license yours
 under the same license as well.
 
-\section*{Appendix B}\label{sec:appendixB}
-\subsection{Sensors}\label{sec:sensors}
+
+\section{Appendix B}\label{sec:appendixB}
+\subsection{Parts}\label{sec:sensors}
 % Fix formating
 Raspberry Pi Camera module: 
 https://www.raspberrypi.org/products/camera-module-v2/
@@ -255,6 +257,10 @@ https://www.raspberrypi.org/products/camera-module-v2/
 Temperature sensor: https://www.adafruit.com/product/1748
 
 Current sensor: https://www.sparkfun.com/products/11005
+
+Raspberry Pi
+
+Arduino
 
 \clearpage{}
 \renewcommand*{\UrlFont}{\footnotesize\ttfamily}

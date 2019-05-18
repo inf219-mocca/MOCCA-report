@@ -22,6 +22,8 @@
 \usepackage[shortlabels]{enumitem}
 
 \usepackage{tikz}
+\usepackage[subpreambles=true]{standalone}
+\usepackage{import}
 \usepackage{graphicx}
 \usepackage{hyperref}
 \hypersetup{hidelinks}
@@ -82,43 +84,45 @@
 \end{itemize}
 
 \section{Introduction}\label{sec:introduction}
-(...) It's an attempt to both write and wire together a solution that combines 
-hardware and software to solve a long
-standing problem we've had in our study hall. The coffee machine is probably the
-most prized and valuable piece of comfort that we have, and is used from eight
-in the morning until the last student goes home.
+(...) It's an attempt to both write and wire together a solution that combines
+hardware and software to solve a long standing problem we've had in our study
+hall. The coffee machine is probably the most prized and valuable piece of
+comfort that we have, and is used from eight in the morning until the last
+student goes home.
 
-The problem is that you're never sure whether or not there is actually
-coffee available, and whenever there is none you waste precious minutes in the
-couch waiting for it to finish brewing. There have been many attempts at solving
-this problem throughout the years, none of which have survived past the initial
-testing phase. This project breaks the chain and have a working product
-that can withstand the test of time.
+The problem is that you're never sure whether or not there is actually coffee
+available, and whenever there is none you waste precious minutes in the couch
+waiting for it to finish brewing. There have been many attempts at solving this
+problem throughout the years, none of which have survived past the initial
+testing phase. This project breaks the chain and have a working product that can
+withstand the test of time.
 
-In this report, we describe a system combining different sensors together with 
-an Arduino and a Raspberry Pi to monitor a Moccamaster and service 
-an API. We call this system \textit{MOCCA}. It's task is to measure both the 
-quality and quantity of coffee. 
+In this report, we describe a system combining different sensors together with
+an Arduino and a Raspberry Pi to monitor a Moccamaster and service an API. We
+call this system \textit{MOCCA}. It's task is to measure both the quality and
+quantity of coffee.
 
-For quality we use both a temperature sensor 
-and power current sensor (?). The temperature is essential to high quality 
-coffee, since you do not want it chilled down and definitely not warmed 
-up again. Another factor of quality is the age of the brew. The good taste of 
-coffee deteriorates as time goes on if it has been held warm for some time. To 
-measure the age of a brew we monitor the amount of power the Moccamaster is 
-draining. A Moccamaster has essentially three states: turned off, brewing, 
-and warming. By saving a time stamp at the start of a new brew, it is trivial 
-to calculate age.
+For quality we use both a temperature sensor and power current sensor (?). The
+temperature is essential to high quality coffee, since you do not want it
+chilled down and definitely not warmed up again. Another factor of quality is
+the age of the brew. The good taste of coffee deteriorates as time goes on if it
+has been held warm for some time. To measure the age of a brew we monitor the
+amount of power the Moccamaster is draining. A Moccamaster has essentially three
+states: turned off, brewing, and warming. By saving a time stamp at the start of
+a new brew, it is trivial to calculate age.
 
-Quantity on the other hand is done by image processing. Images are taken of the 
-coffee pot and in turn analysed with regards to the amount of dark pixels. 
-Taking the background of the pot into account, we produce an rough estimate of 
-the amount of coffee. 
+Quantity on the other hand is done by image processing. Images are taken of the
+coffee pot and in turn analysed with regards to the amount of dark pixels.
+Taking the background of the pot into account, we produce an rough estimate of
+the amount of coffee.
 
 
 \section{System overview}\label{sec:technical-details}
-
-\subsection{DIAGRAM - PLS DO}
+\begin{figure}[h]
+  \centering
+  \scalebox{.75}{\input{architecture.tex}}
+  \caption{Architecture diagram}\label{fig:architecture}
+\end{figure}
 \textit{MOCCA} is written in a wide range of languages and technologies, the
 back-end is written in Python using the Django framework while the front-end is
 written in React, while communication between these two happens across a REST
@@ -164,7 +168,7 @@ then call the documented functions and you are good to go.
 
 
 \subsection{Raspberry Pi}\label{sec:raspberry-pi}
-Raspberry Pi is a small computer with the basics you need: USB, HDMI, WiFi, 
+Raspberry Pi is a small computer with the basics you need: USB, HDMI, WiFi,
 and, most important for us, support for a camera. Though lacking in 
 computational power it's size and affordability makes it a perfect data 
 cruncher for our case. The Pi can fit in a compact container near the 
@@ -193,14 +197,13 @@ possible things you have to account for is near endless, and we have most
 definitely not been able to foresee or cover for all of them.
 
 \subsection{Front-end}\label{sec:front-end}
-The hardest part of the front-end was definitely the CSS.  Though the least 
-complex of the two -ends, it still had its own fair
-share of minor issues. We decided early on with using React due to its
-popularity for web applications nowadays as a learning experience. React is in
-many ways the exact opposite of Django, no batteries included but the ecosystem
-for it is vast. We were again able to lean on existing battle-tested solutions,
-using React Router for creating pages, Axios for querying the API and moment for
-parsing dates.
+The hardest part of the front-end was definitely the CSS. Though the least
+complex of the two -ends, it still had its own fair share of minor issues. We
+decided early on with using React due to its popularity for web applications
+nowadays as a learning experience. React is in many ways the exact opposite of
+Django, no batteries included but the ecosystem for it is vast. We were again
+able to lean on existing battle-tested solutions, using React Router for
+creating pages, Axios for querying the API and moment for parsing dates.
 
 The front-end does a GET request to the API endpoint that our back-end serves
 every ten seconds and tries to display the current status of the coffee. You
@@ -208,9 +211,9 @@ have two possible views, a simple ``the coffee is hot, go get it!'' page and a
 history page listing the last 25 readings.
 
 \section{Conclusion}\label{sec:conclusion}
-We have created a system to somewhat successfully monitor the coffee in a 
+We have created a system to somewhat successfully monitor the coffee in a
 Moccamaster. % Should we call the sensor a current or power sensor?
-Current and temperature sensors connected to an Arduino gather information about 
+Current and temperature sensors connected to an Arduino gather information about
 the quality of the coffee. The temperature and current is then sent to a 
 Raspberry Pi via USB serial. Using a camera connected to the Raspberry Pi we 
 capture an image of the coffee pot to process. Processing these data in 

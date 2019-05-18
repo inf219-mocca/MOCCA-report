@@ -59,14 +59,29 @@
 \chapterstyle{article}
 \pagestyle{headings}
 
-\title{MOCCA: MOCCA Operational Controller for Coffee Availability}
-\author{Eivind D. Halderaker, Sondre Å. Nilsen}
+\title{MOCCA Operational Controller for Coffee Availability}
+\author{Eivind Dagsland Halderaker \and Sondre Åsemoen Nilsen}
 \date{Spring 2019}
 \begin{document}
+\begin{titlingpage}
 
-\include{front-page}
+\newcommand{\HRule}{\rule{\linewidth}{0.5mm}}
+\centering
 
-\tableofcontents
+\textsc{\LARGE University of Bergen \\ Department of informatics}\\[1.5cm] %
+
+\HRule\\[0.5cm]
+\begin{Huge}
+	\bfseries{\thetitle}\\[0.7cm]
+\end{Huge}
+\HRule\\[0.5cm]
+
+{\large \emph{Author:} \theauthor}\\
+{\large \emph{Supervisor:} Lars Albin Severinson\\[2cm]}
+
+\centerline{\includegraphics[scale=1.9]{figures/canvasWithFaculty}}
+{\large \thedate}\\[3cm]
+\vfill
 
 \begin{abstract}
   As students with access to free coffee in our study hall our biggest problem
@@ -74,7 +89,9 @@
   of need. \textit{MOCCA} is an attempt to address and fix this problem once and
   for all: a single source of truth about the availability of fresh coffee.
 \end{abstract}
+\end{titlingpage}
 
+\tableofcontents
 \clearpage
 
 \chapter{Report}

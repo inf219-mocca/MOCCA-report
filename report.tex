@@ -77,21 +77,28 @@
 \HRule\\[0.5cm]
 
 {\large \emph{Author:} \theauthor}\\
-{\large \emph{Supervisor:} Lars Albin Severinson\\[2cm]}
+{\large \emph{Supervisor:} Albin Severinson\\[2cm]}
 
 \centerline{\includegraphics[scale=1.9]{figures/canvasWithFaculty}}
 {\large \thedate}\\[3cm]
 \vfill
 
 \begin{abstract}
-  As students with access to free coffee in our study hall our biggest problem
-  is never knowing whether there will be fresh coffee available from it in times
-  of need. \textit{MOCCA} is an attempt to address and fix this problem once and
-  for all: a single source of truth about the availability of fresh coffee.
+One of the challenges facing students at the informatics departmenet at the 
+University of Bergen is knowing whether there is fresh coffee available in the 
+study hall or not.  Students often lose valuable study time by walking over to 
+the coffee maker, only to discover that the pot is empty or that the coffee is 
+cold.
+
+In this report, we present MOCCA (MOCCA Operational Controller for Coffee 
+Availability), an internet-of-things coffee brewer designed to address this 
+issue. Specifically, MOCCA enables students to visit a website and immedietly 
+know the status of coffee. This is done by measuring the coffee's temperature, 
+brewer's power usage, and lastly the amount of coffee.
 \end{abstract}
 \end{titlingpage}
 
-\tableofcontents
+%\tableofcontents
 \clearpage
 
 \chapter{Report}
@@ -104,11 +111,9 @@
 \end{itemize}
 
 \section{Introduction}\label{sec:introduction}
-(...) It's an attempt to both write and wire together a solution that combines
-hardware and software to solve a long standing problem we've had in our study
-hall. The coffee machine is probably the most prized and valuable piece of
-comfort that we have, and is used from eight in the morning until the last
-student goes home.
+At our study hall our most prized possestion is problably the coffee 
+machine. It is a valuable piece of comfort that we have, and is used from eight 
+in the morning until the last student goes home.
 
 The problem is that you're never sure whether or not there is actually coffee
 available, and whenever there is none you waste precious minutes in the couch
@@ -118,23 +123,27 @@ testing phase. This project breaks the chain and have a working product that can
 withstand the test of time.
 
 In this report, we describe a system combining different sensors together with
-an Arduino and a Raspberry Pi to monitor a Moccamaster and service an API. We
-call this system \textit{MOCCA}. It's task is to measure both the quality and
-quantity of coffee.
+an Arduino and a Raspberry Pi to monitor a drip coffee brewer and service an 
+API. We call this system \textit{MOCCA}. It's task is to measure both the 
+quality and quantity of coffee.
 
 For quality we use both a temperature sensor and power current sensor (?). The
 temperature is essential to high quality coffee, since you do not want it
 chilled down and definitely not warmed up again. Another factor of quality is
 the age of the brew. The good taste of coffee deteriorates as time goes on if it
 has been held warm for some time. To measure the age of a brew we monitor the
-amount of power the Moccamaster is draining. A Moccamaster has essentially three
+amount of power the brewer is draining. A coffee brewer has essentially three
 states: turned off, brewing, and warming. By saving a time stamp at the start of
 a new brew, it is trivial to calculate age.
 
 Quantity on the other hand is done by image processing. Images are taken of the
-coffee pot and in turn analysed with regards to the amount of dark pixels.
-Taking the background of the pot into account, we produce an rough estimate of
+coffee pot and in turn measure with regards to the amount of dark pixels.
+Taking the background of the pot into account, we produce an estimate of
 the amount of coffee.
+
+In Section 2, we give an overview of the system as a whole, in Section 3 we go 
+into the software. Finally, in Section 4 we give some concluding remarks, as 
+well as future work in Section 5.
 
 
 \section{System overview}\label{sec:technical-details}
@@ -151,7 +160,8 @@ The most important piece of software and hardware however is the Arduino
 that is --- essentially --- our interface, together with the camera on the 
 Raspberry Pi, between the real world and our software. It reads the temperature 
 of the coffee and how much power the machine is drawing. Without these sensors 
-and the camera to interface the Moccamaster the whole system is meaningless. 
+and the camera to interface the drip coffee brewer the whole system is 
+meaningless. 
 
 Python was chosen for the back-end. It is a programming language with plenty of 
 libraries available and is fairly concise. The choice of Django however was a 
@@ -177,7 +187,7 @@ every ten seconds, we only want the latest data but we don't want to block
 getting the data on the Arduino itself reading its sensors. The way we worked
 around this issue was to have the Arduino continuously read to the queue,
 discarding the last item in it for every reading, while waiting for us to send a
-predetermined message saying that we are ready for data. In our case this
+predetermined message saying that we are ready for data. In our case this 
 message is simply ``1''.
 
 Once the Arduino receives this it enters a write-mode --- in a sense --- and
@@ -192,19 +202,19 @@ Raspberry Pi is a small computer with the basics you need: USB, HDMI, WiFi,
 and, most important for us, support for a camera. Though lacking in 
 computational power it's size and affordability makes it a perfect data 
 cruncher for our case. The Pi can fit in a compact container near the 
-Moccamaster. We used Raspberry Pi's very own camera module for ease of use and 
-it's included library. The module itself is plug-and-play and has more than high 
-enough resolution for our use. We only need a rough estimate of how full the 
-coffee pot is and high resolution means more data needed to be processed. Most 
-of which is redundant. 
+drip coffee brewer. We used Raspberry Pi's very own camera module for ease of 
+use and it's included library. The module itself is plug-and-play and has more 
+than high enough resolution for our use. We only need a rough estimate of how 
+full the coffee pot is and high resolution means more data needed to be 
+processed. Most of which is redundant. 
 % To be continued...
 
 \section{Software}\label{sec:software}
 \subsection{Back-end}\label{sec:back-end}
 The back-end is definitely the most complex part of the project, in part because
 the real world is messy, but also because you have to orchestra a service that
-communicates with the Arduino while also serving an API, which required us to do
-the data fetching in the background in a asynchronous task runner.
+communicates with the Arduino while also orchestrating an API, which required 
+us to do the data fetching in the background in a asynchronous task runner.
 
 As mentioned, the real world is messy --- there are a ton of moving parts,
 variables and ``states'' it can be in. When reading from the sensors, how do you
@@ -230,9 +240,11 @@ every ten seconds and tries to display the current status of the coffee. You
 have two possible views, a simple ``the coffee is hot, go get it!'' page and a
 history page listing the last 25 readings.
 
+<Insert screenshot of front-end>
+
 \section{Conclusion}\label{sec:conclusion}
 We have created a system to somewhat successfully monitor the coffee in a
-Moccamaster. % Should we call the sensor a current or power sensor?
+drip coffee brewer. % Should we call the sensor a current or power sensor?
 Current and temperature sensors connected to an Arduino gather information about
 the quality of the coffee. The temperature and current is then sent to a 
 Raspberry Pi via USB serial. Using a camera connected to the Raspberry Pi we 

@@ -94,12 +94,11 @@ cold.
 In this report, we present \textit{MOCCA} (MOCCA Operational Controller for
 Coffee Availability), an internet-of-things coffee brewer designed to address
 this issue. Specifically, \textit{MOCCA} enables students to visit a website and
-immedietly know the status of coffee. This is done by measuring the coffee's
+immediately know the status of coffee. This is done by measuring the coffee's
 temperature, brewer's power usage, and lastly the amount of coffee.
 \end{abstract}
 \end{titlingpage}
 
-%\tableofcontents
 \clearpage
 
 \chapter{Report}
@@ -124,8 +123,8 @@ testing phase. This project breaks the chain and have a working product that can
 withstand the test of time.
 
 In this report, we describe a system combining different sensors together with
-an Arduino and a Raspberry Pi to monitor a drip coffee brewer and service an 
-API. We call this system \textit{MOCCA}. It's task is to measure both the 
+an Arduino and a Raspberry Pi to monitor a drip coffee brewer and service an
+API, we call this system \textit{MOCCA}. It's task is to measure both the
 quality and quantity of coffee.
 
 For quality we use both a temperature sensor and power current sensor (?). The
@@ -142,54 +141,39 @@ coffee pot and in turn measure with regards to the amount of dark pixels.
 Taking the background of the pot into account, we produce an estimate of
 the amount of coffee.
 
-In Section 2, we give an overview of the system as a whole, in Section 3 we go 
-into the software. Finally, in Section 4 we give some concluding remarks, as 
-well as future work in Section 5.
+In section \ref{sec:system-overview}, we give an overview as well as a technical
+description of the system and its various subsystems. In section
+\ref{sec:conclusion} we give our concluding remarks as well as future work in
+section \ref{sec:future-work}.
 
-
-\section{System overview}\label{sec:technical-details}
+\section{System overview}\label{sec:system-overview}
 \begin{figure}[h]
-  \centerfloat
+  \centerfloat{}
   \scalebox{.75}{\input{architecture.tex}}
   \caption{Architecture diagram}\label{fig:architecture}
 \end{figure}
-\textit{MOCCA} is written in a wide range of languages and technologies, the
-back-end is written in Python using the Django framework while the front-end is
-written in React, while communication between these two happens across a REST
-API.
-The most important piece of software and hardware however is the Arduino
-that is --- essentially --- our interface, together with the camera on the 
-Raspberry Pi, between the real world and our software. It reads the temperature 
-of the coffee and how much power the machine is drawing. Without these sensors 
-and the camera to interface the drip coffee brewer the whole system is 
-meaningless. 
-
-Python was chosen for the back-end. It is a programming language with plenty of 
-libraries available and is fairly concise. The choice of Django however was a 
-bit more contentious, in the very beginning the battle plan was to use Flask 
-which would've meant that we'd have to do a lot of the heavy lifting ourselves.
-After a fairly quick trial period where we developed a few prototypes the choice
-fell on Django, mostly due to the batteries-included approach of it but perhaps
-mostly due to Sondre's familiarity with it given he had previous experience with
-it.
-
-Thanks to Django we were able to build on top of existing battle-tested
-libraries, we used Django REST Framework for the heavy lifting of implementing
-the API, we used drf-yasg (Django REST Framework - Yet Another Swagger
-Generator) for creating Swagger documentation of the API. For communicating with
-our Arduino we used Pyserial and for asynchronously polling it we used Celery.
+\textit{MOCCA} is composed of three subsystems that are responsible for
+collecting sensor data, processing and storing this data and presenting the data
+to the user, respectively. See figure \ref{fig:architecture}.
 
 \subsection{Data collection}\label{sec:data-collection}
+The first subsystem is the data collection system consisting of a temperature
+sensor measuring the temperature of the coffee, a power sensor measuring power
+draw to determine the state of the brewer and a camera pointed towards the
+coffee for measuring liquid levels. The two first sensors are controlled by an
+Arduino micro controller while the camera however is connected to the Raspberry
+Pi itself.
+
 \subsubsection{Arduino}\label{sec:arduino}
-The code for the Arduino is very simple in all honesty, but it does the job
-required. Any code on an Arduino runs in a tight loop that continuously reads
-from its sensors and saves the data to a queue. Since we read from the Arduino
-every ten seconds, we only want the latest data but we don't want to block
-getting the data on the Arduino itself reading its sensors. The way we worked
-around this issue was to have the Arduino continuously read to the queue,
-discarding the last item in it for every reading, while waiting for us to send a
-predetermined message saying that we are ready for data. In our case this 
-message is simply ``1''.
+The code for the Arduino is very simple in all honesty, but it does its job. Any
+code on an Arduino runs in a tight loop that continuously reads from its sensors
+and saves the data to a queue. Since we only read the data from the Arduino
+every 10 seconds we needed to device a way to get the latest data while ensuring
+that we didn't read it in the middle of a write to the serial interface. Our
+solution was to have the Arduino continuously read to the queue, discarding the
+last item in it for every reading, while waiting for us to send a predetermined
+message saying that we are ready for data. In our case this message is simply
+one: \lstinline{1}.
 
 Once the Arduino receives this it enters a write-mode --- in a sense --- and
 fetches the latest reading from the queue, returns it, clears the queue and
@@ -197,82 +181,133 @@ exits the current state returning to reading data. The sensors themselves all
 came with ready-made libraries that you simply need to download, import them and
 then call the documented functions and you are good to go.
 
+\subsubsection{Raspberry Pi}\label{sec:raspberry-pi}
+Raspberry Pi is a small computer with the basics you need: USB, HDMI, WiFi, and,
+most important for us, support for a camera. Though lacking in computational
+power, its size and affordability makes it a perfect data cruncher for our case,
+it can fit in a compact container near the drip coffee brewer. We used Raspberry
+Pi's own camera module for ease of use. The camera itself is plug-and-play and
+has more than high enough resolution for our use. We only need a rough estimate
+of how full the coffee pot is and high resolution means more data needed to be
+processed. Most of which is redundant.
 
-\subsection{Raspberry Pi}\label{sec:raspberry-pi}
-Raspberry Pi is a small computer with the basics you need: USB, HDMI, WiFi,
-and, most important for us, support for a camera. Though lacking in 
-computational power it's size and affordability makes it a perfect data 
-cruncher for our case. The Pi can fit in a compact container near the 
-drip coffee brewer. We used Raspberry Pi's very own camera module for ease of 
-use and it's included library. The module itself is plug-and-play and has more 
-than high enough resolution for our use. We only need a rough estimate of how 
-full the coffee pot is and high resolution means more data needed to be 
-processed. Most of which is redundant. 
-% To be continued...
+\subsection{Data processing}\label{sec:data-processing}
+The data processing subsystem is where the meat of the system lies, an
+asynchronous task queue calls the data collection subsystem and once the data is
+collected starts processing it. Every ten seconds an event fires which gathers
+the data from the sensors and camera and processes the data given. A lot of the
+heavy lifting here is done in NumPy, a high-performance library for scientific
+computing with Python: once an image has been captured by our camera it is
+transformed into a matrix by converting each pixel into a boolean value
+depending on how bright the pixel is. Thanks to the excellent performance given
+by NumPy even the limited computing power of the Raspberry Pi is no concern.
 
-\section{Software}\label{sec:software}
+The temperature and power draw is simply read from the Arduino without any
+processing necessary. This is not to say that we simply take the values and
+insert them into our database, we still need to verify that the data that was
+returned is valid data in our current state and what to do with it.
+
+If our current assumed state is that the machine is keeping the coffee warm, a
+reading where the temperature suddenly changes can for example be that someone
+has taken away the carafe to fill a cup. These are just some of the scenarios
+that the data processing layer needs to work around. The sensors are ---
+essentially --- our interface to the real world, but the real world can be
+deceitful and the data processing layer is where we tell truth from fiction.
+
+\subsection{Data serving}\label{sec:data-serving}
+The final system is the user facing system, where we serve the data that we have
+gathered and processed. This subsystem consists of two parts, one back-end and
+one front-end. The back-end serves the data that has been gathered and processed
+via an API that is consumable by others that want to build on top of this, and
+most importantly, our front-end.
+
 \subsection{Back-end}\label{sec:back-end}
-The back-end is definitely the most complex part of the project, in part because
-the real world is messy, but also because you have to orchestra a service that
-communicates with the Arduino while also orchestrating an API, which required 
-us to do the data fetching in the background in a asynchronous task runner.
+The back-end is written in Django, a high-level web framework for Python and is
+definitely the most complex part of the project, in part because the real world
+is messy, but also because you have to orchestrate a service that communicates
+with the both the Arduino and takes a picture with our camera while at the same
+time process and serve the data. Due to the constraints put on the system we
+needed to run the data fetching in the background in an asynchronous task
+runner as we could not have the user facing part of the system lock itself up
+while it was processing the data.
 
 As mentioned, the real world is messy --- there are a ton of moving parts,
 variables and ``states'' it can be in. When reading from the sensors, how do you
 know if the current ``state'' of the world is in order? For instance, the coffee
-machine can be powered off by two different parts: its own power supply, but
-also the power plug itself as it runs on a timer. When getting the power status
-from the Arduino, how do you ensure that the machine has been in a consistent
-phase and the reading you are getting is not a one-time event? The amount of
-possible things you have to account for is near endless, and we have most
-definitely not been able to foresee or cover for all of them.
+machine can be powered off by two different parts: its own power supply and the
+socket itself as both of these run on separate timers. When getting the power
+status from the Arduino, how do you ensure that the machine has been in a
+consistent phase and the reading you are getting is not a one-time event? The
+amount of possible things you have to account for is near endless, and we have
+most definitely not been able to foresee or cover for all of them.
 
 \subsection{Front-end}\label{sec:front-end}
 \begin{figure}[ht]
-  \centerfloat
-  \subbottom[When the brewer has lost power]{\includegraphics[width=0.9\textwidth]{figures/nopower}}
-  \subbottom[When it has been brewing, but lost power during]{\includegraphics[width=0.9\textwidth]{figures/brewing}}
-  \caption{Examples of various states of the website}\label{fig:website}
+  \centerfloat{}
+  \subbottom[When the brewer has lost power]{
+    \includegraphics[width=0.9\textwidth]{figures/nopower}
+  }
+  \subbottom[When it has been brewing, but lost power during]{
+    \includegraphics[width=0.9\textwidth]{figures/brewing}
+  }
+  \caption{Examples of various states represented on the website}\label{fig:website}
 \end{figure}
-The hardest part of the front-end was definitely the CSS. Though the least
-complex of the two -ends, it still had its own fair share of minor issues. We
-decided early on with using React due to its popularity for web applications
-nowadays as a learning experience. React is in many ways the exact opposite of
-Django, no batteries included but the ecosystem for it is vast. We were again
-able to lean on existing battle-tested solutions, using React Router for
-creating pages, Axios for querying the API and moment for parsing dates.
+Though not nearly as complex as the back-end, the front-end still had its own
+fair share of minor issues. We decided early on with using React due to its
+popularity for web applications nowadays as a learning experience. It is a very
+simple web application where users can visit in their web browser and instantly
+see how the coffee is doing. Some examples of the core functionality can be seen
+in figure \ref{fig:website}.
 
-The front-end does a GET request to the API endpoint that our back-end serves
-every ten seconds and tries to display the current status of the coffee. You
-have two possible views, a simple ``the coffee is hot, go get it!'' page and a
-history page listing the last 25 readings.
+The web application is in many ways similar to the event loop in our back-end in
+that it automatically attempts to fetch the latest data from the API every 10
+seconds. Though we initially had some concerns about the load to the system we
+have yet to see any performance issues, even while processing our data.
 
-<Insert screenshot of front-end>
+Once the uses visits the web application they are presented with a quick
+overview of how the coffee looked at the latest reading. These states are
+represented by an icon that fills up when the coffee is brewing, or a dead
+coffee pot if the machine is without power and so on. For flavor some text
+describing the data is added, if the coffee is nearly empty the user is told
+that ``you better run'' to emphasize the low amount of coffee left. A history
+page is also included if the user wants to see the trends for the coffee.
 
 \section{Conclusion}\label{sec:conclusion}
-We have created a system to somewhat successfully monitor the coffee in a
-drip coffee brewer. % Should we call the sensor a current or power sensor?
-Current and temperature sensors connected to an Arduino gather information about
-the quality of the coffee. The temperature and current is then sent to a 
-Raspberry Pi via USB serial. Using a camera connected to the Raspberry Pi we 
-capture an image of the coffee pot to process. Processing these data in 
-turn gives us an insight in the quality and quality of the coffee.
+We have created a system to somewhat successfully monitor the coffee in a drip
+coffee brewer. Current and temperature sensors connected to an Arduino gather
+information about the quality of the coffee. The temperature and current is then
+sent to a Raspberry Pi via an USB serial interface. Using a camera connected to
+the Raspberry Pi we capture an image of the coffee pot to process the amount of
+liquid in the container. Processing this data in turn gives us an insight in the
+quality and quality of the coffee.
 
 A Django REST API then presents temperature, age and amount to the outside 
-world enabling others to create their own interface. 
+world enabling others to create their own interface and representation of what
+the state of the coffee is.
 
 \section{Future work}\label{sec:future-work}
 Though absolutely a success in the authors opinions, there are still quite a few
 things left that we'd like to implement and others that are
-would-be-cool-to-have. We have talked about doing statistics about which
-students drink the most coffee, who is the best at starting a new pot of coffee
-if the old one is empty and so on.
+would-be-cool-to-have. The biggest, and probably most pressing item to do is
+some sort of shell for the hardware. We had grand plans of creating a nice
+3D-printed case for both the Raspberry Pi and Arduino, but time was not on our
+side before the scheduled deadline. This is something that we'd like to be able
+to do during the summer so that it is ready for the new students arriving this
+fall.
 
-The biggest, and probably most pressing item to do is some sort of shell for the
-hardware. We had grand plans of creating a nice 3D-printed case for both the
-Raspberry Pi and Arduino, but time was not on our side before the scheduled
-deadline. This is something that we'd like to be able to do during the summer so
-that it is ready for the new students arriving this fall.
+The front-end is overly simple and could benefit from having more pages showing
+historical data but the potential for how and what is represented is also vast.
+When discussing the project with students while we are testing the system some
+suggestions keeps reappearing:
+
+\begin{itemize}
+\item Adding a scanner for the student ID to track how much coffee each student
+  drinks, but also tracking who makes the most coffee or who takes the last cup
+  of coffee without making a new one.
+\item Tracking how many liters of coffee is consumed and being able to
+  extrapolate fun and interesting data from this. For example how much more
+  coffee is consumed during the exam period versus a regular day.
+\end{itemize}
 
 \clearpage
 \appendix

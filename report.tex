@@ -55,6 +55,7 @@
 \setenumerate[0]{label= (\alph*)}
 \AtBeginDocument{\counterwithin{lstlisting}{section}}
 \counterwithout{section}{chapter}
+\newsubfloat{figure}
 
 \chapterstyle{article}
 \pagestyle{headings}
@@ -227,6 +228,12 @@ possible things you have to account for is near endless, and we have most
 definitely not been able to foresee or cover for all of them.
 
 \subsection{Front-end}\label{sec:front-end}
+\begin{figure}[ht]
+  \centerfloat
+  \subbottom[When the brewer has lost power]{\includegraphics[width=0.9\textwidth]{figures/nopower}}
+  \subbottom[When it has been brewing, but lost power during]{\includegraphics[width=0.9\textwidth]{figures/brewing}}
+  \caption{Examples of various states of the website}\label{fig:website}
+\end{figure}
 The hardest part of the front-end was definitely the CSS. Though the least
 complex of the two -ends, it still had its own fair share of minor issues. We
 decided early on with using React due to its popularity for web applications

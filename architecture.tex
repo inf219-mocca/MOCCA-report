@@ -3,41 +3,52 @@
 \usetikzlibrary{positioning,fit,arrows.meta,backgrounds}
 
 \tikzset{
-    module/.style={%
-        draw, rounded corners,
-        minimum width=#1,
-        minimum height=7mm,
-        font=\sffamily
-        },
-    module/.default=2cm,
-    >=LaTeX
+  module/.style={%
+    draw, rounded corners,
+    minimum width=#1,
+    minimum height=7mm,
+    font=\sffamily
+  },
+  module/.default=2cm,
+  container/.style={
+    draw, rounded corners,
+    minimum-width=#1,
+    minimum height=5cm,
+    font=\sffamily
+  },
+  container/.default=2cm,
+  small/.style={
+    draw, rounded corners,
+    minimum height=2.5cm
+    font=\sffamily
+  },
+  >=LaTeX
 }
 
 \begin{document}
 \begin{tikzpicture}[->]
-  \node[module] (Loop) {Main loop};
   % Arduino box
-  \node[module, below left=1cm and 5mm of Loop] (Read) {Read from sensors};
-  \node[module, below left=8mm and -1cm of Read] (Temp) {Temperature};
-  \node[module, below right=8mm and -1cm of Read] (Power) {Power draw};
-  \node[fit=(Read) (Temp) (Power), draw, label={Arduino}] (SensorBox) {};
+  \node[module] (Read) {Read from sensors};
+  \node[module, below left=1cm and -1cm of Read] (Temp) {Temperature};
+  \node[module, below right=1cm and -1cm of Read] (Power) {Power draw};
+  \node[small,fit=(Read) (Temp) (Power), draw, label={Arduino}] (SensorBox) {};
   \draw[->] (Read)--(Temp);
   \draw[->] (Read)--(Power);
   % Raspberry Pi processing box
-  \node[module, below right=1cm and 5mm of Loop] (Camera) {Take picture};
+  \node[module, right=2cm of Read] (Camera) {Take picture};
   \node[module, below=of Camera] (CamProcess) {Process};
-  \node[fit=(Camera) (CamProcess), draw, label={Raspberry Pi}] (Pi2Box) {};
+  \node[small, fit=(Camera) (CamProcess), draw, label={Raspberry Pi}] (Pi2Box) {};
   \draw[->] (Camera)--(CamProcess);
   % Data collection box
-  \node[fit=(SensorBox) (Pi2Box) (Loop), draw, inner sep=2mm, label={Data collection}] (DataCollectionBox) {};
-  \draw[->] (Loop)--(SensorBox);
-  \draw[->] (Loop)--(Pi2Box);
+  \node[container, fit=(SensorBox) (Pi2Box) (Loop),
+  draw, inner xsep=2mm, inner ysep=.5cm,
+  label={Data collection}] (DataCollectionBox) {};
 
   % Data processing box
-  \node[module, right=2cm of {Loop-|DataCollectionBox.east}] (AsyncLoop) {Async loop};
+  \node[module, above right=-1.15cm and 2cm of DataCollectionBox] (AsyncLoop) {Async loop};
   \node[module, below=of AsyncLoop] (Data) {Data processing};
   \node[module, below=of Data] (Storage) {Storage};
-  \node[fit={(AsyncLoop) (Data) (Storage)},
+  \node[container, fit={(AsyncLoop) (Data) (Storage)},
         draw, inner sep=2mm,
         label={Data processing}]
         (MainBox) {};
@@ -45,13 +56,13 @@
   \draw[->] (Data)--(Storage);
 
   % Connect main loop and async loop
-  \draw[<->,dashed] (Loop)--(AsyncLoop);
+  \draw[<->] (DataCollectionBox)--(MainBox);
 
   % Serve box
   \node[module, right=2cm of {AsyncLoop-|MainBox.east}] (Server) {Server};
   \node[module, below=of Server] (API) {API};
   \node[module, below=of API] (Website) {Website};
-  \node[fit={(Server) (API) (Website)}, draw, inner sep=2mm, label={Serving}] (ServeBox) {};
+  \node[container, fit={(Server) (API) (Website)}, draw, inner sep=2mm, label={Serving}] (ServeBox) {};
   \draw[->] (Server)--(API);
   \path[] (Server) edge[bend left=52.5] node [left] {} (Website);
   \draw[->] (API)--(Website);

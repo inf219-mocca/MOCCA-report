@@ -111,35 +111,48 @@ temperature, brewer's power usage, and lastly the amount of coffee.
 \end{itemize}
 
 \section{Introduction}\label{sec:introduction}
-At our study hall our most prized possestion is problably the coffee 
+At our study hall our most prized possession is probably the coffee 
 machine. It is a valuable piece of comfort that we have, and is used from eight 
 in the morning until the last student goes home.
 
-The problem is that you're never sure whether or not there is actually coffee
+The problem is that you are never sure whether or not there is actually coffee
 available, and whenever there is none you waste precious minutes in the couch
 waiting for it to finish brewing. There have been many attempts at solving this
 problem throughout the years, none of which have survived past the initial
 testing phase. This project breaks the chain and have a working product that can
 withstand the test of time.
 
-In this report, we describe a system combining different sensors together with
-an Arduino and a Raspberry Pi to monitor a drip coffee brewer and service an
-API, we call this system \textit{MOCCA}. It's task is to measure both the
-quality and quantity of coffee.
+In this report, we present \textit{MOCCA}, a system for measuring both the 
+quality, and quantity of coffee. It orchestrates an API giving information 
+about the temperature of the coffee, how old the brew is, and an estimate of 
+the amount of coffee. In turn this API is then used to display the information 
+on a website.
 
-For quality we use both a temperature sensor and power current sensor (?). The
-temperature is essential to high quality coffee, since you do not want it
-chilled down and definitely not warmed up again. Another factor of quality is
-the age of the brew. The good taste of coffee deteriorates as time goes on if it
-has been held warm for some time. To measure the age of a brew we monitor the
-amount of power the brewer is draining. A coffee brewer has essentially three
-states: turned off, brewing, and warming. By saving a time stamp at the start of
-a new brew, it is trivial to calculate age.
+\textit{MOCCA} achieves this by combining different sensors together with an 
+Arduino and a Raspberry Pi as data cruncher. For quality we use both a 
+temperature sensor and power current sensor (?). Measuring temperature is fairly 
+straight forward with a contact-less temperature sensor, however figuring out 
+how old a brew is is a bit trickier. 
+To measure the age of a brew we monitor the amount of power the brewer is 
+draining. A coffee brewer has essentially three states: turned off, brewing, and 
+warming. By saving a time stamp at the start of a new brew, it is trivial to 
+calculate age at a given point. 
 
 Quantity on the other hand is done by image processing. Images are taken of the
 coffee pot and in turn measure with regards to the amount of dark pixels.
 Taking the background of the pot into account, we produce an estimate of
 the amount of coffee.
+
+This approach has the benefit of giving the students of our study hall 
+real-time information about the drip brewer. Students are still able to use the 
+brewer as usual without any interference from our product. Being non-intrusive 
+is one of our goals as we do not want to sacrifice the coffee brewer's ease 
+of use.
+%The temperature is essential to high 
+%quality coffee, since you do not want it chilled down and definitely not 
+%warmed up again. Another factor of quality is the age of the brew. The good 
+%taste of coffee deteriorates as time goes on if it has been held warm for 
+%some time.
 
 In section \ref{sec:system-overview}, we give an overview as well as a technical
 description of the system and its various subsystems. In section

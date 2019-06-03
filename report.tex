@@ -139,20 +139,19 @@ warming. By saving a time stamp at the start of a new brew, it is trivial to
 calculate age at a given point. 
 
 Quantity on the other hand is done by image processing. Images are taken of the
-coffee pot and in turn measure with regards to the amount of dark pixels.
+coffee pot and in turn measured with regards to the amount of dark pixels.
 Taking the background of the pot into account, we produce an estimate of
-the amount of coffee.
+the coffee's volume.
 
-This approach has the benefit of giving the students of our study hall 
+This approach has the benefit of giving the students near our study hall 
 real-time information about the drip brewer. Students are still able to use the 
 brewer as usual without any interference from our product. Being non-intrusive 
 is one of our goals as we do not want to sacrifice the coffee brewer's ease 
 of use.
-%The temperature is essential to high 
-%quality coffee, since you do not want it chilled down and definitely not 
-%warmed up again. Another factor of quality is the age of the brew. The good 
-%taste of coffee deteriorates as time goes on if it has been held warm for 
-%some time.
+%The temperature is essential to high quality coffee, since you do not want it 
+%chilled down and definitely not warmed up again. Another factor of quality is 
+%the age of the brew. The good taste of coffee deteriorates as time goes on if 
+%it has been held warm for some time.
 
 In section \ref{sec:system-overview}, we give an overview as well as a technical
 description of the system and its various subsystems. In section
@@ -238,7 +237,7 @@ most importantly, our front-end.
 The back-end is written in Django, a high-level web framework for Python and is
 definitely the most complex part of the project, in part because the real world
 is messy, but also because you have to orchestrate a service that communicates
-with the both the Arduino and takes a picture with our camera while at the same
+with both the Arduino and takes a picture with our camera while at the same
 time process and serve the data. Due to the constraints put on the system we
 needed to run the data fetching in the background in an asynchronous task
 runner as we could not have the user facing part of the system lock itself up
@@ -280,7 +279,7 @@ have yet to see any performance issues, even while processing our data.
 Once the uses visits the web application they are presented with a quick
 overview of how the coffee looked at the latest reading. These states are
 represented by an icon that fills up when the coffee is brewing, or a dead
-coffee pot if the machine is without power and so on. For flavor some text
+coffee pot if the machine is without power, and so on. For flavor some text
 describing the data is added, if the coffee is nearly empty the user is told
 that ``you better run'' to emphasize the low amount of coffee left. A history
 page is also included if the user wants to see the trends for the coffee.
@@ -292,12 +291,14 @@ information about the quality of the coffee. The temperature and current is then
 sent to a Raspberry Pi via an USB serial interface. Using a camera connected to
 the Raspberry Pi we capture an image of the coffee pot to process the amount of
 liquid in the container. Processing this data in turn gives us an insight in the
-quality and quality of the coffee.
+quality and quality of the coffee. These sensor are all non-intrusive, as to 
+not discourage the students from brewing and drinking that sweet coffee.
 
 A Django REST API then presents temperature, age and amount to the outside 
 world enabling others to create their own interface and representation of what
-the state of the coffee is.
-
+the state of the coffee is. For others we have created a website to make it 
+accessible for the masses.
+ 
 \section{Future work}\label{sec:future-work}
 Though absolutely a success in the authors opinions, there are still quite a few
 things left that we'd like to implement and others that are

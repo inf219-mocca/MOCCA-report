@@ -62,7 +62,7 @@
 
 \title{MOCCA Operational Controller for Coffee Availability}
 \author{Eivind Dagsland Halderaker \and Sondre Åsemoen Nilsen}
-\date{Spring 2019}
+\date{INF219, Spring 2019}
 \begin{document}
 \begin{titlingpage}
 
@@ -77,7 +77,7 @@
 \end{Huge}
 \HRule\\[0.5cm]
 
-{\large \emph{Author:} \theauthor}\\
+{\large \theauthor}\\
 {\large \emph{Supervisor:} Albin Severinson\\[2cm]}
 
 \centerline{\includegraphics[scale=1.9]{figures/canvasWithFaculty}}
@@ -85,63 +85,52 @@
 \vfill
 
 \begin{abstract}
-One of the challenges facing students at the informatics departmenet at the 
+One of the challenges facing students at the informatics department at the 
 University of Bergen is knowing whether there is fresh coffee available in the 
 study hall or not.  Students often lose valuable study time by walking over to 
 the coffee maker, only to discover that the pot is empty or that the coffee is 
-cold.
-
-In this report, we present \textit{MOCCA} (MOCCA Operational Controller for
-Coffee Availability), an internet-of-things coffee brewer designed to address
-this issue. Specifically, \textit{MOCCA} enables students to visit a website and
-immediately know the status of coffee. This is done by measuring the coffee's
-temperature, brewer's power usage, and lastly the amount of coffee.
+cold. In this report, we present \textit{MOCCA} (MOCCA Operational Controller 
+for Coffee Availability), an internet-of-things coffee brewer designed to 
+address this issue. Specifically, \textit{MOCCA} enables students to visit a 
+website and immediately know the amount of coffee, its temperature and lastly 
+its age.
 \end{abstract}
 \end{titlingpage}
 
 \clearpage
 
-\chapter{Report}
-\section*{Todos}
-\begin{itemize}
-\item List of acronyms/synonyms/glossary
-\item Links/references to technologies/frameworks
-\item Sensors requires proper names and so on
-\item Give thanks to everyone who has helped
-\end{itemize}
-
 \section{Introduction}\label{sec:introduction}
 At our study hall our most prized possession is probably the coffee 
 machine. It is a valuable piece of comfort that we have, and is used from eight 
-in the morning until the last student goes home.
+in the morning until the last student goes home. The problem is that you are 
+never sure whether or not there is actually coffee available, and whenever there 
+is none you waste precious minutes in the couch waiting for it to finish 
+brewing. There have been many attempts at solving this problem throughout the 
+years, none of which have survived past the initial testing phase. This project 
+breaks the chain and have a working product that can withstand the test of time.
 
-The problem is that you are never sure whether or not there is actually coffee
-available, and whenever there is none you waste precious minutes in the couch
-waiting for it to finish brewing. There have been many attempts at solving this
-problem throughout the years, none of which have survived past the initial
-testing phase. This project breaks the chain and have a working product that can
-withstand the test of time.
-
-In this report, we present \textit{MOCCA}, a system for measuring both the 
-quality, and quantity of coffee. It orchestrates an API giving information 
+In this report, we present \textit{MOCCA} (MOCCA Operational Controller for 
+Coffee Availability), a system for measuring both the temperature, age, and 
+quantity of coffee. It orchestrates a RESTful API, which is a stateless 
+web service that allows clients to make HTTP request to a server via 
+specific URLs. The server then sends a response back that may contain the 
+requested data depending on the type of request. Our API gives information 
 about the temperature of the coffee, how old the brew is, and an estimate of 
-the amount of coffee. In turn this API is then used to display the information 
+the amount of coffee. In turn this API is then used to display this information 
 on a website.
 
 \textit{MOCCA} achieves this by combining different sensors together with an 
-Arduino and a Raspberry Pi as data cruncher. For quality we use both a 
-temperature sensor and power current sensor (?). Measuring temperature is fairly 
-straight forward with a contact-less temperature sensor, however figuring out 
-how old a brew is is a bit trickier. 
-To measure the age of a brew we monitor the amount of power the brewer is 
-draining. A coffee brewer has essentially three states: turned off, brewing, and 
-warming. By saving a time stamp at the start of a new brew, it is trivial to 
-calculate age at a given point. 
+Arduino and a Raspberry Pi as data cruncher. We use both a contact-less 
+infrared sensor and a electrical current sensor. Measuring temperature is 
+fairly straight-forward with a infrared sensor. However, figuring out how old a 
+brew is is a bit trickier. To measure the age of a brew we monitor the amount 
+of current the brewer is drawing. A coffee brewer has essentially three states: 
+turned off, brewing, and warming. By saving time stamps at the start of a new 
+brew, it is trivial to calculate age at a given point. 
 
 Quantity on the other hand is done by image processing. Images are taken of the
-coffee pot and in turn measured with regards to the amount of dark pixels.
-Taking the background of the pot into account, we produce an estimate of
-the coffee's volume.
+coffee pot and the number of dark pixels. Taking the background of the pot into 
+account, we produce an estimate of the amount of coffee.
 
 This approach has the benefit of giving the students near our study hall 
 real-time information about the drip brewer. Students are still able to use the 
@@ -153,7 +142,8 @@ of use.
 %the age of the brew. The good taste of coffee deteriorates as time goes on if 
 %it has been held warm for some time.
 
-In section \ref{sec:system-overview}, we give an overview as well as a technical
+The remaining part of the rapport is organized as follows, section 
+\ref{sec:system-overview} is an overview as well as a technical
 description of the system and its various subsystems. In section
 \ref{sec:conclusion} we give our concluding remarks as well as future work in
 section \ref{sec:future-work}.
@@ -162,30 +152,28 @@ section \ref{sec:future-work}.
 \begin{figure}[h]
   \centerfloat{}
   \scalebox{.75}{\input{architecture.tex}}
-  \caption{Architecture diagram}\label{fig:architecture}
+  \caption{System architecture. MORE DETAILS}\label{fig:architecture}
 \end{figure}
 \textit{MOCCA} is composed of three subsystems that are responsible for
 collecting sensor data, processing and storing this data and presenting the data
 to the user, respectively. See figure \ref{fig:architecture}.
 
 \subsection{Data collection}\label{sec:data-collection}
-The first subsystem is the data collection system consisting of a temperature
-sensor measuring the temperature of the coffee, a power sensor measuring power
-draw to determine the state of the brewer and a camera pointed towards the
-coffee for measuring liquid levels. The two first sensors are controlled by an
-Arduino micro controller while the camera however is connected to the Raspberry
-Pi itself.
+The first subsystem is the data collection system. It consisting of a 
+temperature sensor measuring the temperature of the coffee, a current sensor 
+measuring current to determine the state of the brewer and a camera pointed 
+towards the coffee for measuring amount of coffee. The two first sensors are 
+controlled by the Arduino micro controller while the camera is 
+connected to the Raspberry Pi itself.
 
 \subsubsection{Arduino}\label{sec:arduino}
-The code for the Arduino is very simple in all honesty, but it does its job. Any
-code on an Arduino runs in a tight loop that continuously reads from its sensors
-and saves the data to a queue. Since we only read the data from the Arduino
-every 10 seconds we needed to device a way to get the latest data while ensuring
-that we didn't read it in the middle of a write to the serial interface. Our
-solution was to have the Arduino continuously read to the queue, discarding the
-last item in it for every reading, while waiting for us to send a predetermined
-message saying that we are ready for data. In our case this message is simply
-one: \lstinline{1}.
+Code on an Arduino usually runs in a loop that continuously reads from 
+its sensors and saves the data to a queue. We read the data from the 
+Arduino every 10 seconds so we needed to device a way to get the latest data 
+while ensuring that we didn't read it in the middle of a write to the serial 
+interface. Our solution is for the Arduino to continuously read to the queue, 
+discarding the last item in it for every reading, while waiting for us to send 
+a predetermined message saying that we are ready for data.
 
 Once the Arduino receives this it enters a write-mode --- in a sense --- and
 fetches the latest reading from the queue, returns it, clears the queue and
@@ -194,17 +182,18 @@ came with ready-made libraries that you simply need to download, import them and
 then call the documented functions and you are good to go.
 
 \subsubsection{Raspberry Pi}\label{sec:raspberry-pi}
-Raspberry Pi is a small computer with the basics you need: USB, HDMI, WiFi, and,
-most important for us, support for a camera. Though lacking in computational
-power, its size and affordability makes it a perfect data cruncher for our case,
-it can fit in a compact container near the drip coffee brewer. We used Raspberry
-Pi's own camera module for ease of use. The camera itself is plug-and-play and
-has more than high enough resolution for our use. We only need a rough estimate
-of how full the coffee pot is and high resolution means more data needed to be
-processed. Most of which is redundant.
+The Raspberry Pi is a small computer equipped with e.g. USB, HDMI, WiFi, 
+and, most important for us, support for a camera. Though lacking in 
+computational power, its size and affordability makes it a perfect data 
+cruncher for our case, as it can fit in a compact container near the drip 
+coffee brewer. We used the Raspberry Pi Foundation's own camera module and the 
+camera itself is plug-and-play while still having more than high enough 
+resolution for our use. We only need a rough estimate of how full the coffee pot 
+is and high resolution means more data to be processed, most of which is 
+redundant.
 
 \subsection{Data processing}\label{sec:data-processing}
-The data processing subsystem is where the meat of the system lies, an
+The data processing subsystem is where the meat of the system lies. An 
 asynchronous task queue calls the data collection subsystem and once the data is
 collected starts processing it. Every ten seconds an event fires which gathers
 the data from the sensors and camera and processes the data given. A lot of the
@@ -212,7 +201,7 @@ heavy lifting here is done in NumPy, a high-performance library for scientific
 computing with Python: once an image has been captured by our camera it is
 transformed into a matrix by converting each pixel into a boolean value
 depending on how bright the pixel is. Thanks to the excellent performance given
-by NumPy even the limited computing power of the Raspberry Pi is no concern.
+by NumPy, even the limited computing power of the Raspberry Pi is no concern.
 
 The temperature and power draw is simply read from the Arduino without any
 processing necessary. This is not to say that we simply take the values and
@@ -227,11 +216,11 @@ essentially --- our interface to the real world, but the real world can be
 deceitful and the data processing layer is where we tell truth from fiction.
 
 \subsection{Data serving}\label{sec:data-serving}
-The final system is the user facing system, where we serve the data that we have
-gathered and processed. This subsystem consists of two parts, one back-end and
-one front-end. The back-end serves the data that has been gathered and processed
-via an API that is consumable by others that want to build on top of this, and
-most importantly, our front-end.
+The final subsystem is the user facing system, where we serve the data that we 
+have gathered and processed. This subsystem consists of two parts, one back-end 
+and one front-end. The back-end serves the data that has been gathered and 
+processed via an API that is consumable by others that want to build on top of 
+this, and most importantly, our front-end.
 
 \subsection{Back-end}\label{sec:back-end}
 The back-end is written in Django, a high-level web framework for Python and is
@@ -287,12 +276,13 @@ page is also included if the user wants to see the trends for the coffee.
 \section{Conclusion}\label{sec:conclusion}
 We have created a system to somewhat successfully monitor the coffee in a drip
 coffee brewer. Current and temperature sensors connected to an Arduino gather
-information about the quality of the coffee. The temperature and current is then
-sent to a Raspberry Pi via an USB serial interface. Using a camera connected to
-the Raspberry Pi we capture an image of the coffee pot to process the amount of
-liquid in the container. Processing this data in turn gives us an insight in the
-quality and quality of the coffee. These sensor are all non-intrusive, as to 
-not discourage the students from brewing and drinking that sweet coffee.
+information about the quality (TODO: CHANGE FROM QUALITY) of the coffee. The 
+temperature and current is then sent to a Raspberry Pi via an USB serial 
+interface. Using a camera connected to the Raspberry Pi we capture an image of 
+the coffee pot to process the amount of liquid in the container. Processing this 
+data in turn gives us an insight in the quality (TODO: CHANGE FROM QUALITY) and 
+quantity of the coffee. These sensor are all non-intrusive, as to not discourage 
+the students from brewing and drinking that sweet coffee.
 
 A Django REST API then presents temperature, age and amount to the outside 
 world enabling others to create their own interface and representation of what

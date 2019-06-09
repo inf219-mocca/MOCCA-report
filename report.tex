@@ -353,6 +353,38 @@ Manufacturer: Arduino
 \end{itemize}
 
 \chapter{API Reference}\label{sec:api-reference}
+Our API is a REST API, a stateless web service for making HTTP requests to
+endpoints that return data. In our case you can only ever get data from the API,
+it only supports GET requests. Any other kind is rejected by the server,
+therefore there are no security concerns with the API as you cannot send data to
+it. There are two types of requests a user can do, either they can get the
+latest data, or the last 25 data points.
+
+A request to our server with the \lstinline{/api/v1/coffee/now} endpoint would
+respond with a JSON object containing the latest reading if the request is valid:
+
+\lstset{
+    string=[s]{"}{"},
+    stringstyle=\color{blue},
+    comment=[l]{:},
+    commentstyle=\color{black},
+}
+\begin{lstlisting}
+{
+  "id": 223,
+  "measured_at": "2019-04-08T17:42:09.723021+02:00",
+  "temperature": 45,
+  "amount": 0.5,
+  "status": 1,
+  "brew_started": "2019-04-08T17:33:34.161737+02:00",
+  "brew_outages": "00:00:00"
+}
+\end{lstlisting}
+
+For users who want to consume our API there is generated an automatic API
+reference that is available under \lstinline{/swagger/} that documents how to
+connect and use them. For more information, the source code for the API is
+available at {\small\url{https://github.com/inf219-mocca/MOCCAPI}}.
 
 \clearpage{}
 \renewcommand*{\UrlFont}{\footnotesize\ttfamily}

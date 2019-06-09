@@ -92,8 +92,8 @@ the coffee maker, only to discover that the pot is empty or that the coffee is
 cold. In this report, we present \textit{MOCCA} (MOCCA Operational Controller 
 for Coffee Availability), an Internet of Things coffee brewer designed to 
 address this issue. Specifically, \textit{MOCCA} enables students to visit a 
-website and immediately know the amount of coffee, its temperature and lastly 
-its age.
+website and immediately know the amount of remaining coffee, its temperature, 
+and its age.
 \end{abstract}
 \end{titlingpage}
 
@@ -113,24 +113,23 @@ In this report, we present \textit{MOCCA} (MOCCA Operational Controller for
 Coffee Availability), a system for measuring both the temperature, age, and 
 quantity of coffee. It orchestrates a RESTful API, which is a stateless 
 web service that allows clients to make HTTP request to a server via 
-specific URLs. The server then sends a response back that may contain the 
-requested data depending on the type of request. Our API gives information 
-about the temperature of the coffee, how old the brew is, and an estimate of 
-the amount of coffee. In turn this API is then used to display this information 
-on a website.
+specific URLs. The server then sends a response back that containing the 
+requested data. Our API gives information about the temperature of the coffee, 
+how old the brew is, and an estimate of the amount of coffee remaining. In turn 
+this API is then used to display this information on a website.
 
 \textit{MOCCA} achieves this by combining different sensors together with an 
-Arduino and a Raspberry Pi as data cruncher. We use both a contact-less 
-infrared sensor and a electrical current sensor. Measuring temperature is 
-fairly straight-forward with a infrared sensor. However, figuring out how old a 
-brew is is a bit trickier. To measure the age of a brew we monitor the amount 
-of current the brewer is drawing. A coffee brewer has essentially three states: 
-turned off, brewing, and warming. By saving time stamps at the start of a new 
-brew, it is trivial to calculate age at a given point. 
-
-Quantity on the other hand is done by image processing. Images are taken of the
-coffee pot and the number of dark pixels. Taking the background of the pot into 
-account, we produce an estimate of the amount of coffee.
+Arduino and a Raspberry Pi as data cruncher, specifically, a contact-less 
+infrared temperature sensor, an electrical current sensor, and a camera. 
+Measuring temperature is fairly straight-forward with a infrared sensor. 
+However, figuring out how old a brew is is a bit trickier. To measure the age of 
+a brew we monitor the amount of current the brewer is drawing. A coffee brewer 
+has essentially three states: turned off, brewing, and warming. By saving time 
+stamps at the start of a new brew, it is trivial to calculate age at a given 
+point. Quantity, on the other hand, is measured by image processing. Images are 
+taken of the coffee pot and we estimate the amount of coffee remaining by 
+counting the number of dark pixels,while accounting for the background of the 
+pot.
 
 This approach has the benefit of giving the students near our study hall 
 real-time information about the drip brewer. Students are still able to use the 
@@ -142,11 +141,11 @@ of use.
 %the age of the brew. The good taste of coffee deteriorates as time goes on if 
 %it has been held warm for some time.
 
-The remaining part of the rapport is organized as follows, section 
+The remainder of the rapport is organized as follows. Section 
 \ref{sec:system-overview} is an overview as well as a technical
-description of the system and its various subsystems. In section
-\ref{sec:conclusion} we give our concluding remarks as well as future work in
-section \ref{sec:future-work}, and ending with acknowledgements in section 
+description of the system and its various subsystems. In Section
+\ref{sec:conclusion}, we give our concluding remarks. Finally in Section 
+\ref{sec:future-work}, and ending with acknowledgements in section 
 \ref{sec:acknowledgements}.
 
 \section{System overview}\label{sec:system-overview}
@@ -160,33 +159,30 @@ collecting sensor data, processing and storing this data and presenting the data
 to the user, respectively. See figure \ref{fig:architecture}.
 
 \subsection{Data collection}\label{sec:data-collection}
-The first subsystem is the data collection system. It consisting of a 
+The first subsystem is the data collection system. It consists of an 
 infrared sensor measuring the temperature of the coffee, a current sensor 
 measuring current to determine the state of the brewer and a camera pointed 
 towards the coffee for measuring amount of coffee. The two first sensors are 
-controlled by the Arduino micro controller while the camera is 
-connected to the Raspberry Pi itself.
+controlled by the Arduino micro controller while the camera is connected to the 
+Raspberry Pi.
 
 \subsubsection{Arduino}\label{sec:arduino}
 Code on an Arduino usually runs in a loop that continuously reads from 
 its sensors and saves the data to a queue. We read the data from the 
 Arduino every 10 seconds so we needed to device a way to get the latest data 
-while ensuring that we didn't read it in the middle of a write to the serial 
+while ensuring that we did not read it in the middle of a write to the serial 
 interface. Our solution is for the Arduino to continuously read to the queue, 
-discarding the last item in it for every reading, while waiting for us to send 
-a predetermined message saying that we are ready for data.
-
-Once the Arduino receives this it enters a write-mode --- in a sense --- and
-fetches the latest reading from the queue, returns it, clears the queue and
-exits the current state returning to reading data. The sensors themselves all
-came with ready-made libraries that you simply need to download, import them and
-then call the documented functions and you are good to go.
+discarding the last item in it for every reading, while waiting for the 
+Raspberry Pi to send a predetermined message saying that it is ready for 
+data. Once the Arduino receives this message enters a write-mode and fetches 
+the latest reading from the queue, returns it, clears the queue and exits the 
+current state returning to reading data. 
 
 \subsubsection{Raspberry Pi}\label{sec:raspberry-pi}
-The Raspberry Pi is a small computer equipped with e.g. USB, HDMI, WiFi, 
+The Raspberry Pi is a small computer equipped with e.g., USB, HDMI, WiFi, 
 and, most important for us, support for a camera. Though lacking in 
 computational power, its size and affordability makes it a perfect data 
-cruncher for our case, as it can fit in a compact container near the drip 
+cruncher for our case as it can fit in a compact container near the drip 
 coffee brewer. We used the Raspberry Pi Foundation's own camera module and the 
 camera itself is plug-and-play while still having more than high enough 
 resolution for our use. We only need a rough estimate of how full the coffee pot 
@@ -214,26 +210,25 @@ reading where the temperature suddenly changes can for example be that someone
 has taken away the carafe to fill a cup. These are just some of the scenarios
 that the data processing layer needs to work around. The sensors are ---
 essentially --- our interface to the real world, but the real world does not 
-always behave as we think it will. Especially noise from the sensors will 
-happen, and when it happens we either need to discard the data from the sensors 
-or sync the system with the real world again. 
+always behave as we think it will. For example, noise from the sensors will 
+happen, and our solution is to discard the data from the sensors.
 
 \subsection{Data serving}\label{sec:data-serving}
 The final subsystem is the user facing system, where we serve the data that we 
 have gathered and processed. This subsystem consists of two parts, one back-end 
 and one front-end. The back-end serves the data that has been gathered and 
 processed via an API that is consumable by others that want to build on top of 
-this, and most importantly, our front-end.
+this, and most importantly, our front-end, the web application.
 
 \subsection{Back-end}\label{sec:back-end}
 The back-end is written in Django, a high-level web framework for Python and is
-definitely the most complex part of the project, in part because the system can 
-become out of sync with the real world. Also because you have to orchestrate a 
+definitely the most complex part of the project. In part because the system can 
+drift out of sync with the real world. Also because you have to orchestrate a 
 service that communicates with both the Arduino and takes a picture with our 
-camera while at the same time process and serve the data. Due to the constraints 
-put on the system we need to run the data fetching in the background in an 
-asynchronous task runner as we could not have the user facing part of the system 
-lock itself up while it was processing the data.
+camera while at the same time processing and serving the data. Due to the 
+constraints put on the system we need to run the data fetching in the background 
+in an asynchronous task runner as we could not have the user facing part of the 
+system lock itself up while it was processing the data.
 
 (...) here are a ton of moving parts, variables and states it can be in. When 
 reading from the sensors, how do you know if the current state of the world is 
@@ -260,43 +255,40 @@ The front-end consists of a web application that users can visit in their web
 browser and instantly see how the coffee is doing. We decided early on using 
 React due to its popularity for web applications nowadays as a learning 
 experience. Some examples of the core functionality can be seen in figure 
-\ref{fig:website}.
+\ref{fig:website}. The web application is in many ways similar to the event 
+loop in our back-end in that it automatically attempts to fetch the latest data 
+from the API every 10 seconds.
 
-The web application is in many ways similar to the event loop in our back-end in
-that it automatically attempts to fetch the latest data from the API every 10
-seconds.
-
-The user visits the web application they are presented with a quick
+When a user visits the web application he/she is presented with a quick
 overview of how the coffee looked at the latest reading. These states are
 represented by an icon that fills up when the coffee is brewing, or a dead
-coffee pot if the machine is without power, with text describing the data is 
-added. If the coffee is nearly empty the user is told that ``you better run'' 
-to emphasize the low amount of coffee left. A history page is also included if 
-the user wants to see the trends for the coffee. (TODO: Define history page)
+coffee pot if the machine is without power, with text describing the data. 
+For example, if the coffee is nearly empty the user is told that ``you better 
+run'' to emphasize the low amount of coffee left. A history page is also 
+included if the user wants to see the trends for the coffee. (TODO: Define 
+history page)
 
 \section{Conclusion}\label{sec:conclusion}
 We have created a system to successfully monitor the coffee in a drip coffee 
-brewer. Current and infrared temperature sensors connected to an Arduino to 
+brewer. Current and infrared temperature sensors connected to an Arduino 
 gather information about the age and temperature of the coffee. The 
 temperature and current is then sent to a Raspberry Pi via an USB serial
 interface. Using a camera connected to the Raspberry Pi, we capture images of 
 the coffee pot to measure the amount of coffee in the container. Processing 
 this data in turn gives us an insight in the temperature, age, and quantity of 
 the coffee. These sensor are all non-intrusive, as to not discourage the 
-students from brewing and drinking that sweet coffee.
-
-A Django REST API then presents temperature, age and amount to the outside 
-world enabling others to create their own interface and representation of what
-the state of the coffee is. For others we have created a website to make it 
-accessible for the masses.
+students from brewing and drinking that sweet coffee. A Django REST API then 
+presents temperature, age and amount to the outside world enabling others to 
+create their own interface and representation of what the state of the coffee 
+is. For others we have created a website to make it accessible for the masses.
  
 \section{Future work}\label{sec:future-work}
 There are still quite a few features left that we would like to implement and 
-others that are would-be-cool-to-have. The biggest, and probably most pressing 
+others that would-be-cool-to-have. The biggest, and probably most pressing 
 item to do is some sort of casing for the hardware. We had grand plans of 
 creating a nice 3D-printed case for both the Raspberry Pi and Arduino, but time 
-was not on our side before the scheduled deadline. This is something that we'd 
-like to be able to do during the summer so that it is ready for the new 
+was not on our side before the scheduled deadline. This is something that we 
+would like to be able to do during the summer so that it is ready for the new 
 students arriving this fall.
 
 The front-end is simple and could benefit from having more pages showing
@@ -332,16 +324,15 @@ The code for the Arduino however required the usage of a library that was
 licensed under the APGLv3 license. The family of GPL licenses are what many call
 viral licenses, if you use a library in your program that is licensed under
 these your program is in essence infected and you now have to license yours
-under the same license as well. Hence, this code is GPL.
+under the same license as well. Hence, this code is licensed under GPL.
 
 \chapter{Parts}\label{sec:parts}
 % Fix formating
 \begin{itemize}
 \item \textbf{Raspberry Pi Camera Module v2.0} \newline
-Manufacturer: Raspberry Pi Foundation \newline
-Part no. ???
+Manufacturer: Raspberry Pi Foundation
 
-\item \textbf{Contact-less Infrared Sensor} \newline
+\item \textbf{Contact-less Infrared Temperature Sensor} \newline
 Manufacturer: Melexis \newline
 Part no. MLX90614
 
@@ -350,12 +341,11 @@ Manufacturer: EChun Electronic \newline
 Part no. ECS1030-L72
 
 \item \textbf{Raspberry Pi 3 Model B+} \newline
-Manufacturer: Raspberry Pi Foundation \newline
-Part no. ???
+Manufacturer: Raspberry Pi Foundation 
 
 \item \textbf{Arduino Uno Rev3} \newline
-Manufacturer: Arduino \newline
-Part no. ???
+Manufacturer: Arduino
+
 \end{itemize}
 
 \chapter{API Reference}\label{sec:api-reference}

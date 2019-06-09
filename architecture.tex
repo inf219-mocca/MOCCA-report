@@ -43,7 +43,7 @@
 
   % Data collection box
   \node[container, fit={(SensorBox) (Pi2Box)},
-  draw, inner xsep=2mm, inner ysep=.5cm,
+  draw, inner xsep=2mm, inner ysep=0.75cm,
   label={Data collection}] (DataCollectionBox) {};
 
   % Data processing box
@@ -60,7 +60,7 @@
   \node[module, right=2cm of Data] (Server) {Server};
   \node[module, below=of Server] (API) {API};
   \node[module, below=of API] (Website) {Website};
-  \node[container, fit={(Server) (API) (Website)}, draw, inner sep=2mm, label={Serving}] (ServeBox) {};
+  \node[small, fit={(Server) (API) (Website)}, draw, inner sep=2mm, label={Serving}] (ServeBox) {};
   \draw[->] (Server)--(API);
   \draw[->] (Server) edge[bend left=52.5] node [left] {} (Website);
   \draw[->] (API)--(Website);
@@ -68,7 +68,7 @@
 
   % Raspberry pi box
   \node[container, fit={(CamProcess) (MainBox) (ServeBox)},
-  draw, inner ysep=.5cm, inner xsep=0.25cm,
+  draw, inner ysep=1cm, inner xsep=0.5cm,
   label={Raspberry Pi}] (RaspberryBox) {};
 \end{tikzpicture}
 \end{document}

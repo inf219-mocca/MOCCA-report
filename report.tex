@@ -153,7 +153,13 @@ description of the system and its various subsystems. In Section
 \begin{figure}[h]
   \centerfloat{}
   \scalebox{.75}{\input{architecture.tex}}
-  \caption{System architecture. MORE DETAILS}\label{fig:architecture}
+  \caption{An overview of the system architecture for \textit{MOCCA}. There are
+    two physically separate systems, an Arduino and a Raspberry Pi. The data
+    collection subsystem uses both for taking a snapshot of the coffee at a
+    given point in time. This data is passed to the data processing subsystems
+    which transforms and stores this data, finally passing it on to the serving
+    subsystem which serves this data to our API, and serves our website.
+  }\label{fig:architecture}
 \end{figure}
 \textit{MOCCA} is composed of three subsystems that are responsible for
 collecting sensor data, processing and storing this data and presenting the data

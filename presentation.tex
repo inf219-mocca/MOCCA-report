@@ -1,0 +1,122 @@
+% Created 2019-06-09 Sun 16:06
+% Intended LaTeX compiler: lualatex
+\documentclass[presentation]{beamer}
+\usepackage{polyglossia}
+\setmainlanguage[variant=usmax]{english}
+\usepackage{fontspec}
+\usepackage{microtype}
+\usepackage{geometry}
+\usepackage{subfiles}
+\usepackage{float}
+\usepackage[font=small,labelfont=bf,format=hang]{caption}
+\usepackage{amsfonts}
+\usepackage{amssymb}
+\usepackage{mathtools}
+\usepackage[shortlabels]{enumitem}
+\usepackage{multirow}
+\usepackage{tabularx}
+\usepackage{hyperref}
+\usepackage{tikz}
+\usepackage[edges]{forest}
+\usepackage{graphicx}
+\usepackage{xcolor}
+\usepackage{colortbl}
+\usepackage{array}
+\usepackage{listings}
+\usepackage[autostyle,strict,autopunct]{csquotes}
+\usepackage[style=ieee,backend=biber]{biblatex}
+\usepackage{tikz}
+\usepackage[subpreambles=true]{standalone}
+\usepackage{adjustbox}
+\usetheme{metropolis}
+\author{Eivind D. Halderaker, Sondre Å. Nilsen}
+\date{Spring 2019}
+\title{INF219 --- MOCCA Operational Controller for Coffee Availability}
+\hypersetup{
+ colorlinks=true,
+ pdfauthor={Eivind D. Halderaker, Sondre Å. Nilsen},
+ pdftitle={INF219 --- MOCCA Operational Controller for Coffee Availability},
+ pdfkeywords={},
+ pdfsubject={},
+ pdfcreator={Emacs 26.2 (Org mode 9.2)},
+ pdflang={English}}
+\begin{document}
+
+\maketitle
+\begin{frame}{Plan}
+\tableofcontents
+\end{frame}
+
+
+\section{Introduction}
+\label{sec:orgc3c3e1f}
+\begin{frame}[label={sec:org470ab70}]{Introduction}
+\begin{itemize}
+\item Coffee is essential to students
+\item Therefore knowing if it is ready is vital
+\item We have a solution: \emph{MOCCA}
+\end{itemize}
+\end{frame}
+\section{System overview}
+\label{sec:orgfdedcbc}
+\begin{frame}[label={sec:orgb2e56b3}]{System overview}
+\begin{adjustbox}{max totalsize={.9\textwidth}{.7\textheight},center}
+  \input{architecture.tex}
+\end{adjustbox}
+\end{frame}
+\begin{frame}[label={sec:orgab2493b}]{Data collection}
+\begin{block}{Arduino}
+Reads temperature and current from brewer
+\end{block}
+\begin{block}{Raspberry Pi}
+Takes a photo of the coffee carafe
+\end{block}
+\end{frame}
+\begin{frame}[label={sec:orgfa3311b}]{Data processing}
+\begin{itemize}
+\item Does the heavy lifting
+\item Converts raw data to usable data
+\end{itemize}
+\end{frame}
+\begin{frame}[label={sec:org0473935}]{Data processing}
+\begin{itemize}
+\item Is our interface to the real world
+\item Needs to be able to distinguish between fact and fiction
+\end{itemize}
+\end{frame}
+\begin{frame}[label={sec:orgb38fb0c}]{Data serving}
+\begin{block}{Back-end}
+Serves a REST API that is consumable by applications
+\end{block}
+\begin{block}{Front-end}
+A React web application that shows the current state of the coffee
+\end{block}
+\end{frame}
+\begin{frame}[label={sec:org62541be}]{Data serving}
+\includegraphics[width=0.9\textwidth]{figures/nopower}
+\end{frame}
+\begin{frame}[label={sec:org8222a43}]{Data serving}
+\includegraphics[width=0.9\textwidth]{figures/brewing}
+\end{frame}
+\section{Conclusion}
+\label{sec:org3960dc8}
+\begin{frame}[label={sec:org75f1a67}]{Conclusion}
+\begin{itemize}
+\item We have created a system that successfully monitors the coffee
+\item This is done through a series of subsystems
+\item The data is available to anyone willing to use it
+\end{itemize}
+\end{frame}
+\section{Future work}
+\label{sec:org362679c}
+\begin{frame}[label={sec:org7a4914a}]{Future work}
+\begin{itemize}
+\item Creating a proper case for the system
+\item More historical data available through API
+\item A scanner for tracking student coffee consumption
+\item Tracking how much coffee is consumed each day
+\end{itemize}
+\end{frame}
+\section{Live demo}
+\label{sec:org1de1029}
+\end{document}

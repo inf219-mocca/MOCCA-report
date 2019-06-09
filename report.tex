@@ -188,11 +188,11 @@ how full the coffee pot is and high resolution means more data to be processed,
 most of which is redundant.
 
 \subsection{Data processing}\label{sec:data-processing}
-The data processing subsystem is where the meat of the system lies. An
-asynchronous task queue calls the data collection subsystem and once the data is
-collected starts processing it. Every ten seconds an event fires which gathers
-the data from the sensors and camera, and processes the data given. A lot of the
-heavy lifting here is done in NumPy, a high-performance library for scientific
+The data processing subsystem is the core of our application. An asynchronous
+task queue calls the data collection subsystem and once the data is collected
+starts processing it. Every ten seconds an event fires which gathers the data
+from the sensors and camera, and processes the data given. A lot of the heavy
+lifting here is done in NumPy, a high-performance library for scientific
 computing with Python. Once an image has been captured by our camera it is
 transformed into a matrix of boolean values based on a threshold for brightness.
 Thanks to the excellent performance given by NumPy, even the limited computing

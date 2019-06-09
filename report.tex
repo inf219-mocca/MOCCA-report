@@ -111,10 +111,11 @@ breaks the chain and have a working product that can withstand the test of time.
 
 In this report, we present \textit{MOCCA} (MOCCA Operational Controller for 
 Coffee Availability), a system for measuring both the temperature, age, and 
-quantity of coffee. It orchestrates a RESTful API, which is a stateless 
-web service that allows clients to make HTTP request to a server via 
-specific URLs. The server then sends a response back that containing the 
-requested data. Our API gives information about the temperature of the coffee, 
+quantity of coffee. It orchestrates a REST API, which is a stateless 
+web service that allows clients to make HTTP requests to a server via 
+specific URLs. If a request is valid, the server then sends a response back 
+containing the requested data, and if the request did not succeed information 
+about why not. Our API gives information about the temperature of the coffee, 
 how old the brew is, and an estimate of the amount of coffee remaining. In turn 
 this API is then used to display this information on a website.
 
@@ -167,16 +168,14 @@ controlled by the Arduino micro controller while the camera is connected to the
 Raspberry Pi.
 
 \subsubsection{Arduino}\label{sec:arduino}
-Code on an Arduino usually runs in a loop that continuously reads from 
-its sensors and saves the data to a queue. We read the data from the 
-Arduino every 10 seconds so we needed to device a way to get the latest data 
-while ensuring that we did not read it in the middle of a write to the serial 
-interface. Our solution is for the Arduino to continuously read to the queue, 
-discarding the last item in it for every reading, while waiting for the 
-Raspberry Pi to send a predetermined message saying that it is ready for 
-data. Once the Arduino receives this message enters a write-mode and fetches 
-the latest reading from the queue, returns it, clears the queue and exits the 
-current state returning to reading data. 
+Our code on the Arduino runs in a loop, continuously reading from its sensors 
+and saves the data to a queue. This queue prevents the Raspberry Pi from 
+reading the data in the middle of a write to the serial interface. The Arduino 
+writes continuously to the queue, discarding the last item in it for every 
+reading, and waits for the Raspberry Pi to send a predetermined message saying 
+that it is ready for data. Once the Arduino receives this message it enters a 
+write-mode and fetches the latest reading from the queue, returns it, clears the 
+queue and exits the current state returning to reading data. 
 
 \subsubsection{Raspberry Pi}\label{sec:raspberry-pi}
 The Raspberry Pi is a small computer equipped with e.g., USB, HDMI, WiFi, 
@@ -210,8 +209,8 @@ reading where the temperature suddenly changes can for example be that someone
 has taken away the carafe to fill a cup. These are just some of the scenarios
 that the data processing layer needs to work around. The sensors are ---
 essentially --- our interface to the real world, but the real world does not 
-always behave as we think it will. For example, noise from the sensors will 
-happen, and our solution is to discard the data from the sensors.
+always behave as we think it will. Data from the sensors that does not match up 
+to our expectation will happen, and our solution is to discard this data.
 
 \subsection{Data serving}\label{sec:data-serving}
 The final subsystem is the user facing system, where we serve the data that we 
@@ -294,14 +293,13 @@ students arriving this fall.
 The front-end is simple and could benefit from having more pages showing
 historical data. The potential for how and what is represented is vast. When 
 discussing the project with students while we are testing the system some
-suggestions keeps reappearing:
-(TODO: Rewrite these parts)
-Adding a scanner for the student ID to track how much coffee each student 
-drinks, but also tracking who makes the most coffee or who takes the last cup 
-of coffee without making a new one.
-Tracking how many liters of coffee is consumed and being able to
-extract fun and interesting data from this. For example, how much more
-coffee is consumed during the exam period compared to a regular day.
+suggestions keeps reappearing. The most popular is to add a scanner for 
+the student IDs to track how much coffee each student drinks, but also tracking 
+who makes the most coffee or who takes the last cup of coffee without making a 
+new one. Second most popular is to track how many liters of coffee is 
+consumed and being able to extract fun and interesting data from this. For 
+example, how much more coffee is consumed during the exam period compared to a 
+regular day.
 
 
 \section{Acknowledgements}\label{sec:acknowledgements}

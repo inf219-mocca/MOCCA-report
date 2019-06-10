@@ -89,8 +89,8 @@
   University of Bergen is knowing whether there is fresh coffee available in the
   study hall or not. Students often lose valuable study time by walking over to
   the coffee maker, only to discover that the pot is empty or that the coffee is
-  cold. In this report, we present \textsc{mocca}: MOCCA Operational Controller
-  for Coffee Availability, an Internet of Things coffee brewer accessory
+  cold. In this report, we present \textsc{mocca} (MOCCA Operational Controller
+  for Coffee Availability) an Internet of Things coffee brewer accessory
   designed to address this issue. Specifically, \textsc{mocca} enables students
   to visit a website and immediately know the amount of remaining coffee, its
   temperature, and its age.
@@ -110,80 +110,82 @@ many attempts at solving this problem throughout the years, none of which have
 survived past the prototyping phase. This project breaks the chain and have a
 working product that can withstand the test of time.
 
-In this report, we present \textsc{mocca}: MOCCA Operational Controller for
-Coffee Availability, a system for measuring both the temperature, age, and
+In this report, we present \textsc{mocca} (MOCCA Operational Controller for
+Coffee Availability), a system for measuring both the temperature, age, and
 quantity of coffee. It orchestrates a \textsc{rest api}, which is a stateless
 web service that allows clients to make \textsc{http} requests to our server
-using predefined \textsc{url} endpoints representing the data our system has
-stored. If a request is valid the server responds with the requested data, and
-if the request is not valid or did not succeed information about why not. Our
-\textsc{api} gives information about the temperature of the coffee, how old the
-brew is, and an estimate of the amount of coffee remaining. In turn this
+using predefined \textsc{url} endpoints. These endpoints represent the data our
+system has stored. If a request is valid the server responds with the requested
+data, and if the request is not valid or did not succeed information about why
+not. Our \textsc{api} gives information about the temperature of the coffee, how
+old the brew is, and an estimate of the amount of coffee remaining. In turn this
 \textsc{api} is then used to display this information on a website.
 
 \textsc{mocca} achieves this by combining a contact-less infrared temperature
-sensor and an electrical current sensor connected to an Arduino Uno and a camera
-connected to a Raspberry Pi, which also doubles as our data cruncher. Measuring
-temperature is fairly straight-forward with an infrared sensor. Calculating the
-age of the brew is a bit trickier as it involves monitoring the amount of
-current the brewer is drawing. A coffee brewer has essentially three states:
-turned off, brewing, and warming. By combining time stamps and the current, we
-can calculate when a new brew is started and how old any given brew is. Quantity
-is measured by image processing. Images are taken of the coffee pot and we
-estimate the amount of coffee remaining by counting the number of dark
-pixels,while accounting for the background of the pot.
+sensor and an electrical current sensor connected to an Arduino Uno. As well as
+a camera connected to a Raspberry Pi, which also doubles as our data cruncher.
+Measuring temperature is fairly straight-forward with an infrared sensor.
+Calculating the age of the brew is a bit trickier as it involves monitoring the
+amount of current the brewer is drawing. A coffee brewer has essentially three
+states: turned off, brewing, and warming. By combining the electrical current
+and the time of the reading, we can calculate when a new brew is started and how
+old any given brew is. Quantity is measured by image processing. Images are
+taken of the coffee pot and we estimate the amount of coffee remaining by
+counting the number of dark pixels,while accounting for the background of the
+pot.
 
 This approach has the benefit of giving the students near our study hall
 real-time information about the drip brewer. Students are still able to use the
 brewer as usual without any interference from our product. A hard requirement is
-that our solution must be non-intrusive, we cannot interfere or take apart the
-brewer, nor can we sacrifice the ease of access and use for it.
+that our solution must be non-intrusive --- we cannot interfere with the ease of
+access and use of the brewer.
 
-The remainder of the report is organized as follows: section
+The remainder of the report is organized as follows: Section
 \ref{sec:system-overview} is an overview as well as a technical description of
 the system and its various subsystems. In Section \ref{sec:conclusion}, we give
 our concluding remarks. Section \ref{sec:future-work} contains future work,
-ending with acknowledgements in section \ref{sec:acknowledgements}.
+ending with acknowledgements in Section \ref{sec:acknowledgements}.
 
 \section{System overview}\label{sec:system-overview}
 \begin{figure}[h]
   \centerfloat{}
   \scalebox{.75}{\input{architecture.tex}}
   \caption{An overview of the system architecture for \textsc{mocca}. There are
-    two physically separate systems, an Arduino and a Raspberry Pi. The data
+    two physically separate systems, an Arduino Uno and a Raspberry Pi. The data
     collection subsystem uses both for taking a snapshot of the coffee at a
-    given point in time. This data is passed to the data processing subsystems
+    given point in time. This data is passed to the data processing subsystem
     which transforms and stores this data, finally passing it on to the serving
-    subsystem which serves this data to our \textsc{api}, and serves our website.
-  }\label{fig:architecture}
+    subsystem which serves this data to our \textsc{api}, and serves our
+    website.}\label{fig:architecture}
 \end{figure}
 \textsc{mocca} is composed of three subsystems that are responsible for
-collecting sensor data, processing and storing this data and presenting the data
-to the user, respectively. See figure \ref{fig:architecture}. It is written in
-Django, a high-level web framework for Python. The subsystems live together in
-the application as three separate applications that pass data between them, and
-is therefore quite complex. The subsystems are intricately linked and care has
-been taken to ensure that one system crashing or stopping cannot bring down the
-whole application.
+collecting sensor data, processing and storing this data, and presenting the
+data to the user, respectively. See figure \ref{fig:architecture}. The code on
+the Arduino is written in Arduino C, while the code on the Raspberry Pi is
+written in Django, a high-level web framework for Python. The subsystems live
+together in the application as three separate applications that pass data
+between them, and is therefore quite complex. The subsystems are intricately
+linked and care has been taken to ensure that one system crashing or stopping
+cannot bring down the whole application.
 
 \subsection{Data collection}\label{sec:data-collection}
-The first subsystem is the data collection system. It consists of an 
-infrared sensor measuring the temperature of the coffee, a current sensor 
-measuring current to determine the state of the brewer and a camera pointed 
-towards the coffee for measuring amount of coffee. The two first sensors are 
-controlled by the Arduino micro controller while the camera is connected to the 
+The first subsystem is the data collection system. It consists of an infrared
+sensor measuring the temperature of the coffee, an electrical current sensor
+measuring current to determine the state of the brewer, and a camera pointed
+towards the coffee for measuring amount of coffee. The two first sensors are
+controlled by the Arduino micro controller while the camera is connected to the
 Raspberry Pi.
 
 \subsubsection{Arduino}\label{sec:arduino}
-Our code on the Arduino runs in a loop, continuously reading from its sensors,
-saving the data to a queue. The Arduino continuously adds to the queue,
-discarding the last item in it for every reading, and waits for the Raspberry Pi
-to send a predetermined message saying that it is ready for data. This queue
-prevents the Raspberry Pi from reading data in the middle of a write to the
-serial interface, a communication interface that transmits data using a stream
-of bits. Once the Arduino receives this message it enters a write-mode and
-fetches the latest reading from the queue, returns it, clears the queue and
-exits the current state returning to reading data.
+Our code on the Arduino runs in a loop, reading from its sensors, saving the
+data to a queue. The Arduino continuously adds to the queue, discarding the last
+item in it for every reading, and waits for the Raspberry Pi to send a
+predetermined message saying that it is ready for data. This queue prevents the
+Raspberry Pi from reading data in the middle of a write to the serial interface,
+a communication interface that transmits data using a stream of bits. Once the
+Arduino receives this message it enters a write-mode and fetches the latest
+reading from the queue, returns it, clears the queue and exits the current state
+returning to reading data.
 
 \subsubsection{Raspberry Pi}\label{sec:raspberry-pi}
 The Raspberry Pi 3+ is a small computer equipped with \textsc{usb},
@@ -207,13 +209,13 @@ power of the Raspberry Pi is no concern.
 
 The temperature and power draw is simply read from the Arduino without any
 processing necessary. This is not to say that we simply take the values and
-insert them into our database, we still need to verify that the data that was
+insert them into our database. We still need to verify that the data that was
 returned is valid data in our current state and what to do with it. There are a
 number of moving parts, variables and possible states that we need to ensure are
 all in sync and valid, requiring sophisticated error handling. How does the
 subsystem know that the current state of the world is in order? As we are
 processing data we need to determine if the data that was read and received
-matches our current expected state and values, while also ensuring that the
+matches our current expected state and values. While also ensuring that the
 possible causes of this does not cause the system to enter a state where no
 further data will be valid. This is achieved by various safety checks, and with
 data validation. Since the system runs on a ten second loop, our solution to
@@ -222,13 +224,12 @@ Because the intervals between reading data is as short as it is, we deemed it
 fine to wait ten seconds for the next reading.
 
 For instance, the coffee machine can be powered off by two different parts: its
-own power supply or the socket that it is connected to as both these run on
+own power supply or the socket that it is connected to as both of these run on
 separate timers. This is simple enough, if there is no power going through the
-current sensor we know that there's an outage and update the state of the brew
+current sensor we know that there is an outage and update the state of the brew
 accordingly. If the temperature of the coffee is hotter than the brewer can
-possibly achieve, we discard it. Or, if the temperature from the latest reading
-to the one being processed is above our threshold for valid swings in
-temperature, we discard it and wait for the next.
+possibly achieve, we discard it. On the other hand, if the temperature change is
+larger than our allowed threshold, we discard it and wait for the next.
 
 If our current assumed state is that the machine is keeping the coffee warm, a
 reading where the temperature suddenly changes can for example be that someone
@@ -243,7 +244,7 @@ this ensures that the system will only store valid data.
 The final subsystem is the user facing subsystem, where we serve the data that
 we have gathered and processed. This subsystem consists of two parts, one
 back-end and one front-end. The back-end is our \textsc{api}, a web service that
-a user an query to get data from either the latest reading or the 25 last
+a user can query to get data from either the latest reading or the 25 last
 readings. This \textsc{api} is also consumed by our front-end, a web application
 that continuously queries the \textsc{api} and displays the current state in a
 human readable form.
@@ -272,43 +273,44 @@ to interactively explore and see what is available and how to query the data.
 The front-end is a web application, separate from the previous subsystems, that
 users can visit in their web browser and instantly see the current state of the
 coffee. We decided early on using React, a JavaScript library for building web
-application, due to its popularity as a learning experience. Some examples of
-the web application can be seen in figure \ref{fig:website}. The web application
-shares some characteristics with the back-end in that it automatically attempts
-to fetch the latest data from the \textsc{api} every ten seconds.
+application. Some examples of the web application can be seen in figure
+\ref{fig:website}. The web application shares some characteristics with the
+back-end in that it automatically attempts to fetch the latest data from the
+\textsc{api} every ten seconds.
 
 When a user visits the web application they are presented with an overview page
 listing the current state of the coffee. These states are represented by an icon
-showing the current amount of coffee or if it is without power and two lines of
-flavor text explaining how the brew is doing and whether it is safe to go grab a
-cup right now. For example, if the coffee is nearly empty the icon is a coffee
-carafe that is nearly empty, and the user is told that ``you better run'' to
-emphasize that you need to grab the coffee with due haste. A history page is
-also included if the user wants to see the trends for the coffee. This page
-lists the last 25 readings of the brewer, allowing the user to at a glance see
-how the coffee has been doing for the last few minutes.
+showing the current amount of coffee, or if it is without power a dead coffee
+pot. Alongside are two lines of flavor text explaining how the brew is doing and
+whether it is safe to go grab a cup right now. For example, if the coffee is
+nearly empty the icon is a coffee carafe that is nearly empty, and the user is
+told that ``you better run'' to emphasize that you need to grab the coffee with
+due haste. A history page is also included if the user wants to see the trends
+for the coffee. This page lists the last 25 readings of the brewer, allowing the
+user to at a glance see how the coffee has been doing for the last few minutes.
 
 \section{Conclusion}\label{sec:conclusion}
 We have created a system that successfully monitors the coffee in a drip coffee
-brewer. Current and infrared temperature sensors connected to an Arduino gather
-information about the age and temperature of the coffee. The temperature and
-current is then sent to a Raspberry Pi via an \textsc{usb} serial interface.
-Using a camera connected to the Raspberry Pi, we capture images of the coffee
-pot to measure the amount of coffee in the container. Processing this data in
-turn gives us an insight in the temperature, age, and quantity of the coffee.
-These sensor are non-intrusive, as to not discourage the students from brewing
-and drinking that sweet coffee. A Django \textsc{rest api} then presents
-temperature, age and amount to the outside world enabling others to create their
-own interface and representation of what the state of the coffee is. For others
-we have created a website to make it accessible for the masses.
+brewer. An electrical current sensor and an infrared temperature sensor
+connected to an Arduino gather information about the age and temperature of the
+coffee. The temperature and current is then sent to a Raspberry Pi via an
+\textsc{usb} serial interface. Using a camera connected to the Raspberry Pi, we
+capture images of the coffee pot to measure the amount of coffee in the
+container. Processing this data in turn gives us an insight in the temperature,
+age, and quantity of the coffee. These sensor are non-intrusive, as to not
+discourage the students from brewing and drinking that sweet coffee. A Django
+\textsc{rest api} then presents temperature, age and amount to the outside world
+enabling others to create their own interface and representation of what the
+state of the coffee is. For others we have created a website to make it
+accessible for the masses.
  
 \section{Future work}\label{sec:future-work}
 \textsc{mocca} successfully allows users to both at a glance see the state of
 the coffee and build their own applications on top of this. The system currently
 has no proper case, and this is the biggest and most pressing future work item.
-We would like to 3D-print a case that can contain both the Raspberry Pi, Arduino
-and easily aim the sensors. This is something that we would like to be able to
-finish before new students arrive this fall.
+We would like to 3D-print a case that can contain both the Raspberry Pi,
+Arduino, and easily aim the sensors. This is something that we would like to be
+able to finish before new students arrive this fall.
 
 The front-end is quite simple and could benefit from having historical data
 represented with graphs and history going further back than the last 25
@@ -324,9 +326,9 @@ a regular day.
 
 \section{Acknowledgements}\label{sec:acknowledgements}
 We would like to thank Simula UiB for sponsoring the hardware components we
-needed, our supervisor Albin Severinson for giving us helpful and rapid feedback
-during our almost weekly meetings. Thanks to Hjalmar Svenstrup Andersen and
-Sondre Vestad for consulting us on the matters of electronics and hardware.
+needed, and our supervisor Albin Severinson for giving us helpful and rapid
+feedback during our almost weekly meetings. Thanks to Hjalmar Svenstrup Andersen
+and Sondre Vestad for consulting us on the matters of electronics and hardware.
 
 \clearpage
 \appendix
@@ -376,7 +378,7 @@ with the \textsc{api} as you cannot send data to it. There are two types of
 requests a user can do, either they can get the latest data, or the last 25 data
 points.
 
-A request to our server with the \lstinline{/api/v1/coffee/now} endpoint would
+A request to our server with the \lstinline{/api/v1/coffee/now} endpoint will
 respond with a \textsc{json} object containing the latest reading if the request
 is valid:
 
